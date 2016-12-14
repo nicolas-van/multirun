@@ -3,7 +3,7 @@ multirun
 ========
 
 A very simple Unix utility to run multiple commands concurrently. It is mostly useful as a lightweight solution to run
-multiple servers in docker containers.
+multiple servers in the same docker container.
 
 Usage: multirun "command1" "command2" ...
 
