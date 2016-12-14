@@ -2,8 +2,8 @@
 multirun
 ========
 
-A very simple Unix utility to run multiple commands concurrently. It is mostly useful as a lightweight solution to run
-multiple servers in the same docker container.
+A very simple Unix utility to run multiple commands concurrently. It is mostly useful to replace supervisord to run
+multiple servers in the same docker container with a much lighter alternative.
 
 Usage: multirun "command1" "command2" ...
 
