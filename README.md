@@ -17,8 +17,14 @@ A few comments about its behavior:
 Installation
 ------------
 
-Currently the only way is to compile it. But since it has no dependencies it's really easy to do. You just need git,
-make and cc.
+### Binary
+
+    wget https://github.com/nicolas-van/multirun/releases/download/0.1.0/multirun-x64-0.1.0.tar.gz
+    tar -zxvf multirun-x64-0.1.0.tar.gz
+    mv multirun /bin
+    rm multirun-x64-0.1.0.tar.gz
+    
+### Sources
 
     git clone --branch 0.1.0 https://github.com/nicolas-van/multirun.git
     cd multirun
