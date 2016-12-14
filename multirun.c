@@ -7,43 +7,63 @@
 #include <sys/wait.h>
 #include <signal.h>
 
-#ifndef DEBUG
-#define DEBUG 0
-#endif
-
-#if DEBUG
-#define LOG(mess) printf("%s", mess); printf("\n");
-#else
-#define LOG(mess)
-#endif
-
 typedef struct {
     pid_t pid;
 } subprocess;
 
+void print_help();
+void launch_processes();
 void sub_exec(const char * command);
 void kill_all(int signal);
 void sig_receive(int signum);
 
+int verbose = 0;
+char* const* commands;
 int nbr = 0;
 subprocess* subprocesses = NULL;
 int error = 0;
 int counter = 0;
 int closing = 0;
 
-int main(int argc, const char** argv) {
+int main(int argc, char* const* argv) {
+    int opt;
+    
+    while ((opt = getopt(argc, argv, "vh")) != -1) {
+        switch (opt) {
+        case 'v':
+            verbose = 1;
+            break;
+        case 'h':
+            print_help();
+            exit(0);
+            break;
+        default: /* '?' */
+            print_help();
+            exit(-1);
+        }
+    }
+    if (optind >= argc) {
+        print_help();
+        exit(-1);
+    }
+    commands = &argv[optind];
+    nbr = argc - optind;
+    launch_processes();
+}
+
+void launch_processes() {
     int wstatus;
     struct sigaction ssig;
     
-    nbr = argc - 1;
     subprocesses = malloc(sizeof(subprocess) * nbr);
     
     for (int i = 0; i < nbr; i++) {
-        LOG("Launching command:");
-        LOG(argv[i + 1]);
+        if (verbose) {
+            printf("multirun: launching command %s\n", commands[i]);
+        }
         pid_t pid = fork();
         if (pid == 0) {
-            sub_exec(argv[i + 1]);
+            sub_exec(commands[i]);
             exit(-1); // should not happen
         } else {
             subprocess new_sub;
@@ -61,7 +81,9 @@ int main(int argc, const char** argv) {
     while (counter < nbr) {
         wait(&wstatus);
         if (WIFEXITED(wstatus) || WIFSIGNALED(wstatus)) {
-            LOG("One of the subprocesses exited");
+            if (verbose) {
+                printf("multirun: one of the subprocesses exited\n");
+            }
             counter += 1;
             if (WIFEXITED(wstatus) && WEXITSTATUS(wstatus) != 0){
                 error = 1;
@@ -70,26 +92,44 @@ int main(int argc, const char** argv) {
             }
             if (! closing) {
                 closing = 1;
-                LOG("Sending SIGTERM to all subprocesses");
+                if (verbose) {
+                    printf("multirun: sending SIGTERM to all subprocesses\n");
+                }
                 kill_all(SIGTERM);
             }
         } else {
-            LOG("Received unhandled signal from subprocess");
+            if (verbose) {
+                printf("multirun: received unhandled signal from subprocess\n");
+            }
         }
     }
     if (error == 1) {
-        printf("One or more of the provided commands ended abnormally\n");
-        return -1;
+        fprintf(stderr, "multirun: one or more of the provided commands ended abnormally\n");
+        exit(-1);
     } else {
-        return 0;
+        if (verbose) {
+            printf("multirun: all subprocesses exited without errors\n");
+        }
+        exit(0);
     }
+}
+
+void print_help() {
+    printf("Usage: multirun <options> command...\n");
+    printf("\n");
+    printf("multirun is a small utility to run multiple commands concurrently. ");
+    printf("If one of these commands terminate it will kill on the others.\n");
+    printf("\n");
+    printf("Options:\n");
+    printf("    -v verbose mode\n");
+    printf("    -h display help\n");
 }
 
 void sub_exec(const char* command) {
     int ret;
     ret = execlp("sh", "sh", "-c", command, (char*) NULL);
     if (ret != 0) {
-        printf("Error launching the subprocess: %s\n", strerror(errno));
+        fprintf(stderr, "multirun: error launching the subprocess: %s\n", strerror(errno));
         exit(-1);
     }
 }
@@ -101,7 +141,9 @@ void kill_all(int signal) {
 }
 
 void sig_receive(int signum) {
-    LOG("Received signal, propagating to all subprocesses");
+    if (verbose) {
+        printf("multirun: received signal, propagating to all subprocesses\n");
+    }
     if (signum == SIGTERM) {
         closing = 1;
     }
