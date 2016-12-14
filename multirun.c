@@ -118,7 +118,7 @@ void print_help() {
     printf("Usage: multirun <options> command...\n");
     printf("\n");
     printf("multirun is a small utility to run multiple commands concurrently. ");
-    printf("If one of these commands terminate it will kill on the others.\n");
+    printf("If one of these commands terminate it will kill all the others.\n");
     printf("\n");
     printf("Options:\n");
     printf("    -v verbose mode\n");
