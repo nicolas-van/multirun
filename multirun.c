@@ -22,19 +22,21 @@ typedef struct {
 } subprocess;
 
 void sub_exec(const char * command);
-void kill_all(subprocess* subprocesses, int nbr, int signal);
+void kill_all(int signal);
 void sig_receive(int signum);
 
+int nbr = 0;
+subprocess* subprocesses = NULL;
+int error = 0;
+int counter = 0;
+int closing = 0;
+
 int main(int argc, const char** argv) {
-    
-    subprocess* subprocesses;
-    int nbr = argc - 1;
-    subprocesses = malloc(sizeof(subprocess) * nbr);
     int wstatus;
-    int error = 0;
-    int counter = 0;
-    int closing = 0;
     struct sigaction ssig;
+    
+    nbr = argc - 1;
+    subprocesses = malloc(sizeof(subprocess) * nbr);
     
     for (int i = 0; i < nbr; i++) {
         LOG("Launching command:");
@@ -69,7 +71,7 @@ int main(int argc, const char** argv) {
             if (! closing) {
                 closing = 1;
                 LOG("Sending SIGTERM to all subprocesses");
-                kill_all(subprocesses, nbr, SIGTERM);
+                kill_all(SIGTERM);
             }
         } else {
             LOG("Received unhandled signal from subprocess");
@@ -92,12 +94,16 @@ void sub_exec(const char* command) {
     }
 }
 
-void kill_all(subprocess* subprocesses, int nbr, int signal) {
+void kill_all(int signal) {
     for (int i = 0; i < nbr; i++) {
         kill(subprocesses[i].pid, signal);
     }
 }
 
 void sig_receive(int signum) {
-    //printf("Received signal %d\n", signum);
+    LOG("Received signal, propagating to all subprocesses");
+    if (signum == SIGTERM) {
+        closing = 1;
+    }
+    kill_all(signum);
 };
