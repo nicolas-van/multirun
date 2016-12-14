@@ -17,12 +17,19 @@ A few comments about its behavior:
 Installation
 ------------
 
-### Binary
+### Binary (Ubuntu)
 
-    wget https://github.com/nicolas-van/multirun/releases/download/0.1.0/multirun-x64-0.1.0.tar.gz
-    tar -zxvf multirun-x64-0.1.0.tar.gz
+    wget https://github.com/nicolas-van/multirun/releases/download/0.1.0/multirun-ubuntu-0.1.0.tar.gz
+    tar -zxvf multirun-ubuntu-0.1.0.tar.gz
     mv multirun /bin
-    rm multirun-x64-0.1.0.tar.gz
+    rm multirun-ubuntu-0.1.0.tar.gz
+    
+### Binary (Alpine)
+
+    wget https://github.com/nicolas-van/multirun/releases/download/0.1.0/multirun-alpine-0.1.0.tar.gz
+    tar -zxvf multirun-alpine-0.1.0.tar.gz
+    mv multirun /bin
+    rm multirun-alpine-0.1.0.tar.gz
     
 ### Sources
 
