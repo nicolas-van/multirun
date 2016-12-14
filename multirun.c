@@ -7,13 +7,23 @@
 #include <sys/wait.h>
 #include <signal.h>
 
+#ifndef DEBUG
+#define DEBUG 0
+#endif
+
+#if DEBUG
+#define LOG(mess) printf("%s", mess); printf("\n");
+#else
+#define LOG(mess)
+#endif
+
 typedef struct {
     pid_t pid;
 } subprocess;
 
 void sub_exec(const char * command);
 void kill_all(subprocess* subprocesses, int nbr, int signal);
-void sig_handler(int signo);
+void sig_receive(int signum);
 
 int main(int argc, const char** argv) {
     
@@ -24,10 +34,11 @@ int main(int argc, const char** argv) {
     int error = 0;
     int counter = 0;
     int closing = 0;
-    
-    signal(SIGINT, sig_handler);
+    struct sigaction ssig;
     
     for (int i = 0; i < nbr; i++) {
+        LOG("Launching command:");
+        LOG(argv[i + 1]);
         pid_t pid = fork();
         if (pid == 0) {
             sub_exec(argv[i + 1]);
@@ -39,9 +50,16 @@ int main(int argc, const char** argv) {
         }
     }
     
+    ssig.sa_handler = sig_receive;
+    if (sigaction(SIGINT, &ssig, NULL))
+        exit(-1);
+    if (sigaction(SIGTERM, &ssig, NULL))
+        exit(-1);
+    
     while (counter < nbr) {
         wait(&wstatus);
         if (WIFEXITED(wstatus) || WIFSIGNALED(wstatus)) {
+            LOG("One of the subprocesses exited");
             counter += 1;
             if (WIFEXITED(wstatus) && WEXITSTATUS(wstatus) != 0){
                 error = 1;
@@ -50,8 +68,11 @@ int main(int argc, const char** argv) {
             }
             if (! closing) {
                 closing = 1;
+                LOG("Sending SIGTERM to all subprocesses");
                 kill_all(subprocesses, nbr, SIGTERM);
             }
+        } else {
+            LOG("Received unhandled signal from subprocess");
         }
     }
     if (error == 1) {
@@ -77,8 +98,6 @@ void kill_all(subprocess* subprocesses, int nbr, int signal) {
     }
 }
 
-void sig_handler(int signo) {
-    signal(signo, sig_handler);
-    if (signo == SIGINT)
-        printf("received %d\n", signo);
-}
+void sig_receive(int signum) {
+    //printf("Received signal %d\n", signum);
+};
