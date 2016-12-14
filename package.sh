@@ -1,6 +1,15 @@
 #!/bin/sh
 
-docker build -t multirun-build:latest .
-docker run -it --rm -v /tmp/dist:/dist multirun-build:latest
+cp Dockerfile.ubuntu Dockerfile
+docker build -t multirun-build-ubuntu:latest .
+docker run -it --rm -v /tmp/dist:/dist multirun-build-ubuntu:latest
 mv /tmp/dist/multirun .
-tar zcvf multirun-x64-$1.tar.gz multirun
+tar zcvf multirun-ubuntu-$1.tar.gz multirun
+
+cp Dockerfile.alpine Dockerfile
+docker build -t multirun-build-alpine:latest .
+docker run -it --rm -v /tmp/dist:/dist multirun-build-alpine:latest
+mv /tmp/dist/multirun .
+tar zcvf multirun-alpine-$1.tar.gz multirun
+
+rm Dockerfile
