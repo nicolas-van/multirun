@@ -27,6 +27,8 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 typedef struct {
     pid_t pid;
     const char* command;
+    int up;
+    int error;
 } subprocess;
 
 void print_help();
@@ -39,8 +41,6 @@ int verbose = 0;
 char* const* commands;
 int nbr_processes = 0;
 subprocess* subprocesses = NULL;
-int error = 0;
-int counter = 0;
 int closing = 0;
 
 int main(int argc, char* const* argv) {
@@ -87,6 +87,8 @@ void launch_processes() {
             subprocess new_sub;
             new_sub.pid = pid;
             new_sub.command = commands[i];
+            new_sub.up = 1;
+            new_sub.error = 0;
             subprocesses[i] = new_sub;
         }
     }
@@ -97,47 +99,60 @@ void launch_processes() {
     if (sigaction(SIGTERM, &ssig, NULL))
         exit(-1);
     
-    while (counter < nbr_processes) {
+    while (1) {
         pid_t pid = wait(&wstatus);
-        if (pid == -1) {
-            continue;
+        subprocess* process = NULL;
+        for (int i = 0; i < nbr_processes; i++) {
+            if (subprocesses[i].pid == pid) {
+                process = &subprocesses[i];
+                break;
+            }
         }
-        if (WIFEXITED(wstatus) || WIFSIGNALED(wstatus)) {
-            subprocess* process = NULL;
-            for (int i = 0; i < nbr_processes; i++) {
-                if (subprocesses[i].pid == pid) {
-                    process = &subprocesses[i];
-                    break;
+        if (process != NULL) {
+            // check if process is down
+            if (WIFEXITED(wstatus) || WIFSIGNALED(wstatus)) {
+                process->up = 0;
+                if ((WIFEXITED(wstatus) && WEXITSTATUS(wstatus) != 0)
+                    || (WIFSIGNALED(wstatus) && WTERMSIG(wstatus) != SIGINT && WTERMSIG(wstatus) != SIGTERM)) {
+                    process->error = 1;
+                    if (verbose) {
+                        printf("multirun: command %s with pid %d exited abnormally\n", process->command, pid);
+                    }
+                } else {
+                    if (verbose) {
+                        printf("multirun: command %s with pid %d exited normally\n", process->command, pid);
+                    }
+                }
+                if (! closing) {
+                    closing = 1;
+                    // activate Goebbels mode
+                    if (verbose) {
+                        printf("multirun: sending SIGTERM to all subprocesses\n");
+                    }
+                    kill_all(SIGTERM);
                 }
             }
-            counter += 1;
-            if ((WIFEXITED(wstatus) && WEXITSTATUS(wstatus) != 0)
-                || (WIFSIGNALED(wstatus) && WTERMSIG(wstatus) != SIGINT && WTERMSIG(wstatus) != SIGTERM)) {
-                error = 1;
-                if (verbose) {
-                    printf("multirun: command %s with pid %d exited abnormally\n",
-                        process != NULL ? process->command : "unknown", pid);
-                }
-            } else {
-                if (verbose) {
-                    printf("multirun: command %s with pid %d exited normally\n",
-                        process != NULL ? process->command : "unknown", pid);
-                }
+        }
+        // check if all processes are stopped
+        int running = 0;
+        for (int i = 0; i < nbr_processes; i++) {
+            if (subprocesses[i].up) {
+                running = 1;
+                break;
             }
-            if (! closing) {
-                closing = 1;
-                if (verbose) {
-                    printf("multirun: sending SIGTERM to all subprocesses\n");
-                }
-                kill_all(SIGTERM);
-            }
-        } else {
-            if (verbose) {
-                printf("multirun: received unhandled signal from subprocess\n");
-            }
+        }
+        if (! running)
+            break;
+    }
+    // check if there are errors
+    int error = 0;
+    for (int i = 0; i < nbr_processes; i++) {
+        if (subprocesses[i].error) {
+            error = 1;
+            break;
         }
     }
-    if (error == 1) {
+    if (error) {
         fprintf(stderr, "multirun: one or more of the provided commands ended abnormally\n");
         exit(-1);
     } else {
