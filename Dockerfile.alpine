@@ -3,7 +3,6 @@ from alpine
 run apk update
 run apk add alpine-sdk
 add . /root/multirun
-run rm /root/multirun/multirun
 
 volume ["/dist"]
 
