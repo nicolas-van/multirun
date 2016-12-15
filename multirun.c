@@ -161,7 +161,13 @@ void print_help() {
 
 void sub_exec(const char* command) {
     int ret;
-    ret = execlp("sh", "sh", "-c", command, (char*) NULL);
+    const char* pre = "exec ";
+    char* ccommand;
+    ccommand = malloc((sizeof(char) * (strlen(pre) + strlen(command))) + 1);
+    ccommand[0] = 0;
+    strcat(ccommand, pre);
+    strcat(ccommand, command);
+    ret = execlp("sh", "sh", "-c", ccommand, (char*) NULL);
     if (ret != 0) {
         fprintf(stderr, "multirun: error launching the subprocess: %s\n", strerror(errno));
         exit(-1);
