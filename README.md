@@ -17,14 +17,14 @@ A few comments about its behavior:
 Installation
 ------------
 
-### Binary (Ubuntu)
+### Binary using glibc (Ubuntu, Debian, ...)
 
     wget https://github.com/nicolas-van/multirun/releases/download/0.3.0/multirun-ubuntu-0.3.0.tar.gz
     tar -zxvf multirun-ubuntu-0.3.0.tar.gz
     mv multirun /bin
     rm multirun-ubuntu-0.3.0.tar.gz
     
-### Binary (Alpine)
+### Binary using musl libc (Alpine)
 
     wget https://github.com/nicolas-van/multirun/releases/download/0.3.0/multirun-alpine-0.3.0.tar.gz
     tar -zxvf multirun-alpine-0.3.0.tar.gz
