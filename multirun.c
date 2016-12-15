@@ -26,6 +26,7 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 
 typedef struct {
     pid_t pid;
+    const char* command;
 } subprocess;
 
 void print_help();
@@ -36,7 +37,7 @@ void sig_receive(int signum);
 
 int verbose = 0;
 char* const* commands;
-int nbr = 0;
+int nbr_processes = 0;
 subprocess* subprocesses = NULL;
 int error = 0;
 int counter = 0;
@@ -64,7 +65,7 @@ int main(int argc, char* const* argv) {
         exit(-1);
     }
     commands = &argv[optind];
-    nbr = argc - optind;
+    nbr_processes = argc - optind;
     launch_processes();
 }
 
@@ -72,19 +73,20 @@ void launch_processes() {
     int wstatus;
     struct sigaction ssig;
     
-    subprocesses = malloc(sizeof(subprocess) * nbr);
+    subprocesses = malloc(sizeof(subprocess) * nbr_processes);
     
-    for (int i = 0; i < nbr; i++) {
-        if (verbose) {
-            printf("multirun: launching command %s\n", commands[i]);
-        }
+    for (int i = 0; i < nbr_processes; i++) {
         pid_t pid = fork();
         if (pid == 0) {
             sub_exec(commands[i]);
             exit(-1); // should not happen
         } else {
+            if (verbose) {
+                printf("multirun: launched command %s with pid %d\n", commands[i], pid);
+            }
             subprocess new_sub;
             new_sub.pid = pid;
+            new_sub.command = commands[i];
             subprocesses[i] = new_sub;
         }
     }
@@ -95,17 +97,32 @@ void launch_processes() {
     if (sigaction(SIGTERM, &ssig, NULL))
         exit(-1);
     
-    while (counter < nbr) {
-        wait(&wstatus);
+    while (counter < nbr_processes) {
+        pid_t pid = wait(&wstatus);
+        if (pid == -1) {
+            continue;
+        }
         if (WIFEXITED(wstatus) || WIFSIGNALED(wstatus)) {
-            if (verbose) {
-                printf("multirun: one of the subprocesses exited\n");
+            subprocess* process = NULL;
+            for (int i = 0; i < nbr_processes; i++) {
+                if (subprocesses[i].pid == pid) {
+                    process = &subprocesses[i];
+                    break;
+                }
             }
             counter += 1;
-            if (WIFEXITED(wstatus) && WEXITSTATUS(wstatus) != 0){
+            if ((WIFEXITED(wstatus) && WEXITSTATUS(wstatus) != 0)
+                || (WIFSIGNALED(wstatus) && WTERMSIG(wstatus) != SIGINT && WTERMSIG(wstatus) != SIGTERM)) {
                 error = 1;
-            } else if (WIFSIGNALED(wstatus) && WTERMSIG(wstatus) != SIGINT && WTERMSIG(wstatus) != SIGTERM) {
-                error = 1;
+                if (verbose) {
+                    printf("multirun: command %s with pid %d exited abnormally\n",
+                        process != NULL ? process->command : "unknown", pid);
+                }
+            } else {
+                if (verbose) {
+                    printf("multirun: command %s with pid %d exited normally\n",
+                        process != NULL ? process->command : "unknown", pid);
+                }
             }
             if (! closing) {
                 closing = 1;
@@ -152,14 +169,14 @@ void sub_exec(const char* command) {
 }
 
 void kill_all(int signal) {
-    for (int i = 0; i < nbr; i++) {
+    for (int i = 0; i < nbr_processes; i++) {
         kill(subprocesses[i].pid, signal);
     }
 }
 
 void sig_receive(int signum) {
     if (verbose) {
-        printf("multirun: received signal, propagating to all subprocesses\n");
+        printf("multirun: received signal %s, propagating to all subprocesses\n", strsignal(signum));
     }
     if (signum == SIGTERM) {
         closing = 1;
