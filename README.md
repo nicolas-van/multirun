@@ -3,7 +3,7 @@ multirun
 ========
 
 A very simple Unix utility in C to run multiple commands concurrently. It is mostly aimed as a much lighter alternative to
-supervisord to run multiple servers in the same docker container.
+supervisord to run multiple servers in the same Docker container.
 
 Usage: multirun "command1" "command2" ...
 
@@ -14,7 +14,7 @@ A few comments about its behavior:
 * It will only terminate when all its children have exited.
 * If any of its children has exited in an abnormal way it will return -1.
 
-This behavior is ideal for Docker as it doesn't try to restart the servers it launches. The process supervision job can simply be delegated to systemd or Docker using its restart policies.
+This behavior is ideal for Docker as it doesn't try to restart the servers it launches. The process supervision job can simply be delegated to systemd or Docker using its restart policies which are better and more appropriate far that than a supervisord instance running in a Docker container.
 
 Installation
 ------------
