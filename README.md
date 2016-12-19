@@ -16,7 +16,7 @@ A few comments about its behavior:
 * It will only terminate when all its children have exited.
 * If any of its children has exited in an abnormal way it will return -1.
 
-This behavior is ideal for Docker as multirun doesn't try to restart the servers it launches. The process supervision job can simply be delegated to systemd or Docker (using its restart policies). Those tools are better and more appropriate for that job than a supervisord instance running in a Docker container.
+This behavior is ideal for Docker as multirun doesn't try to restart the servers it launches, it simply kills everything if any of its children exits. The process supervision job can then be delegated to systemd or Docker (using its restart policies). Those tools are better and more appropriate for that job than a supervisord instance running in a Docker container.
 
 Installation
 ------------
