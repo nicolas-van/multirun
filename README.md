@@ -14,6 +14,8 @@ A few comments about its behavior:
 * It will only terminate when all its children have exited.
 * If any of its children has exited in an abnormal way it will return -1.
 
+This behavior is ideal for Docker as it doesn't try to restart the servers it launches. The process supervision job can simply be delegated to systemd or Docker using its restart policies.
+
 Installation
 ------------
 
