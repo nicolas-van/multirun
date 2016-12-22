@@ -7,7 +7,7 @@ supervisord to run multiple servers in the same Docker container.
 
 Usage: `multirun "command1" "command2" ...`
 
-You can also add the `-v` option to get a full log of the processes it starts and kill.
+You can also add the `-v` option to get a full log of the processes it starts and kills.
 
 A few comments about its behavior:
 
