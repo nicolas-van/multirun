@@ -1,5 +1,5 @@
 FROM alpine:latest
 
-RUN apk update; && \
+RUN apk update && \
     apk add alpine-sdk
     
