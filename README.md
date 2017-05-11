@@ -17,7 +17,7 @@ A few comments about its behavior:
 * If any of its children has exited in an abnormal way it will return -1.
 * It forwards the stdout and stderr of its children.
 
-This behavior is ideal for Docker as multirun doesn't try to restart the servers it launches, it simply kills everything if any of its children exits. The process supervision job can then be delegated to systemd or Docker (using its restart policies). Those tools are better and more appropriate for that job than a supervisord instance running in a Docker container, notably to get centralized logs.
+This behavior is ideal for Docker as multirun doesn't try to restart the servers it launches, it simply kills everything if any of its children exits. The process supervision job can then be delegated to systemd or Docker (using its restart policies). Those tools are more appropriate for that job than a supervisord instance running in a Docker container, notably to get centralized logs.
 
 Installation
 ------------
