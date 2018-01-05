@@ -9,20 +9,12 @@ Usage: `multirun "command1" "command2" ...`
 
 You can also add the `-v` option to get a full log of the processes it starts and kills.
 
-A few comments about its behavior:
-
-* If any of its children exits it will send SIGTERM to all the others.
-* It will ignore SIGINT and SIGTERM but will forward them to all its children.
-* It will only terminate when all its children have exited.
-* If any of its children has exited in an abnormal way it will return -1.
-* It forwards the stdout and stderr of its children.
-
-This behavior is ideal for Docker as multirun doesn't try to restart the servers it launches, it simply kills everything if any of its children exits. The process supervision job can then be delegated to systemd or Docker (using its restart policies). Those tools are more appropriate for that job than a supervisord instance running in a Docker container, notably to get centralized logs.
+multirun never attempts to restart one of its children if it exists. Instead it will kill all its other children before exiting itself. This behavior is ideal for a Docker container as the restart behavior can be delegated to the upper level, as example using systemd or Docker (using its restart policies). Also it forwards all stdout and stderr outputs to be properly logged using Docker's logging features.
 
 Installation
 ------------
 
-### Binary using glibc (Ubuntu, Debian, ...)
+### Binary using glibc (Ubuntu, Debian, Red Hat, Centos...)
 
     wget https://github.com/nicolas-van/multirun/releases/download/0.3.0/multirun-ubuntu-0.3.0.tar.gz && \
     tar -zxvf multirun-ubuntu-0.3.0.tar.gz && \
