@@ -2,7 +2,14 @@
 multirun
 ========
 
-A simple Unix utility in C to run multiple commands concurrently. It is mostly aimed as a much lighter alternative to classic init processes or supervisord to run multiple servers in the same Docker container.
+A simple Unix utility in C to run multiple commands concurrently.
+
+* A lighter alternative to classic init processes or supervisord to run multiple servers in the same Docker container.
+* Is dead-simple to use.
+* Can be run without root permissions.
+* Delegates the restart duty to the upper level.
+* Cleanly kills all the processes it creates.
+* Forwards stdout and stderr for proper logging with Docker.
 
 Usage: `multirun "command1" "command2" ...`
 
