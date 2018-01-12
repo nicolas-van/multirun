@@ -15,7 +15,7 @@ Usage: `multirun "command1" "command2" ...`
 
 You can also add the `-v` option to get a full log of the processes it starts and kills.
 
-multirun never attempts to restart one of its children if it exists. Instead it will kill all its other children before exiting itself. This behavior is ideal for a Docker container as the restart behavior can be delegated to the upper level, as example using systemd or Docker restart policies. Also it forwards all stdout and stderr outputs to be properly logged using Docker's logging features.
+multirun never attempts to restart one of its children if it exists. Instead it will kill all its other children before exiting itself. This behavior is ideal for a Docker container as the restart behavior can be delegated to the upper level, as example using systemd or Docker restart policies.
 
 Installation
 ------------
