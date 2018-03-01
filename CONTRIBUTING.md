@@ -11,7 +11,9 @@ We currently allow our users to use the issue tracker for support questions. But
 # How Can I Contribute?
 
 ## Reporting Bugs
+
 Before creating bug reports, please check the existing bug reports as you might find out that you don't need to create one. When you are creating a bug report, please include as many details as possible.
+
 #### How Do I Submit A (Good) Bug Report?
 
 Bugs are tracked as [GitHub issues](https://guides.github.com/features/issues/). Create an issue on the project's repository and provide the following information.
@@ -37,6 +39,25 @@ Include details about your configuration and environment:
 * **Which version of the project are you using?**
 * **What's the name and version of the OS you're using**?
 * **Any other information that could be useful about you environment**
+
+### Suggesting Enhancements
+
+This section guides you through submitting an enhancement suggestion for this project, including completely new features and minor improvements to existing functionality. Following these guidelines helps maintainers and the community understand your suggestion :pencil: and find related suggestions :mag_right:.
+
+Before creating enhancement suggestions, please check the list of enhancements suggestions in the issue tracker as you might find out that you don't need to create one. When you are creating an enhancement suggestion, please include as many details as possible.
+
+#### How Do I Submit A (Good) Enhancement Suggestion?
+
+Enhancement suggestions are tracked as [GitHub issues](https://guides.github.com/features/issues/). Create an issue on the project's repository and provide the following information:
+
+* **Use a clear and descriptive title** for the issue to identify the suggestion.
+* **Provide a step-by-step description of the suggested enhancement** in as many details as possible.
+* **Provide specific examples to demonstrate the steps**. Include copy/pasteable snippets which you use in those examples, as [Markdown code blocks](https://help.github.com/articles/markdown-basics/#multiple-lines).
+* **Describe the current behavior** and **explain which behavior you expected to see instead** and why.
+* **Include screenshots and animated GIFs** if it seems useful to explain you problem better. Here are some useful program that can help you to record animated GIFs: If you use the keyboard while following the steps, **record the GIF with the [Keybinding Resolver](https://github.com/atom/keybinding-resolver) shown**. You can use [this tool](https://www.cockos.com/licecap/) to record GIFs on macOS and Windows, and [this tool](https://github.com/colinkeenan/silentcast) or [this tool](https://github.com/GNOME/byzanz) on Linux.
+* **List some other similar projects where this enhancement exists.**
+* **Specify which version of the project you're using.**
+* **Specify the current environment you're using.** if this is a useful information.
 
 
 # Ground Rules
