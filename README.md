@@ -45,4 +45,4 @@ Installation
 
 ## Contributing
 
-[See the contribution guide](CONTRIBUTING.md)
+[See the contribution guide for help](CONTRIBUTING.md)
