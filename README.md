@@ -42,4 +42,7 @@ Installation
     cp multirun /bin && \
     cd .. && \
     rm -rf multirun
-    
+
+## Contributing
+
+[See the contribution guide](CONTRIBUTING.md)
