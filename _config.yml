@@ -11,3 +11,5 @@ include:
   - CODE_OF_CONDUCT.md
   - CONTRIBUTING.md
   - ISSUE_TEMPLATE
+
+theme: jekyll-theme-hacker
