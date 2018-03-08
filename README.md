@@ -45,4 +45,8 @@ Installation
 
 ## Contributing
 
-[See the contribution guide for help](CONTRIBUTING.md)
+[See the contribution guide.](CONTRIBUTING.md)
+
+## License
+
+[See the license](LICENSE.md)
