@@ -49,4 +49,4 @@ Installation
 
 ## License
 
-[See the license](LICENSE.md)
+[See the license.](LICENSE.md)
