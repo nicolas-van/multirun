@@ -12,4 +12,4 @@ include:
   - CONTRIBUTING.md
   - ISSUE_TEMPLATE
 
-theme: minima
+theme: jekyll-theme-hacker
