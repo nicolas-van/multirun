@@ -1,3 +1,4 @@
+#!/usr/bin/env bats
 
 @test "simple command invocation" {
   rm resultfile 2> /dev/null || true
@@ -24,5 +25,6 @@
   result2=$(cat resultfile2)
   [ "$result2" = "test" ]
 
-  rm resultfile
+  rm resultfile1
+  rm resultfile2
 }
