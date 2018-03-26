@@ -1,6 +1,6 @@
 language: c
 before_install:
   - sudo apt-get -qq update
-  - sudo apt-get install -y build-essential
+  - sudo apt-get install -y build-essential linux-headers-generic
 script: make
 compiler: gcc
