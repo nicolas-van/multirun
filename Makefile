@@ -1,3 +1,3 @@
 
 multirun: multirun.c
-	cc -std=c99 -o multirun multirun.c
+	cc -std=gnu11 -o multirun multirun.c
