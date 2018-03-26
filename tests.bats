@@ -36,7 +36,7 @@
 
 @test "returns -1" {
   run ./multirun "sh -c \"exit -1\""
-  [ "$status" -eq -1 ]
+  [ "$status" -eq 255 ]
   run ./multirun "sh -c \"exit 1\""
-  [ "$status" -eq -1 ]
+  [ "$status" -eq 255 ]
 }
