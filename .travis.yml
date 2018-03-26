@@ -3,3 +3,4 @@ install:
   - git clone --branch v0.4.0 https://github.com/sstephenson/bats.git
 script:
   - make
+  - ./bats/bin/bats tests.bats
