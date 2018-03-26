@@ -1,5 +1,8 @@
 
-@test "addition using bc" {
-  result="$(echo 2+2 | bc)"
-  [ "$result" -eq 4 ]
+@test "simple command invocation" {
+  ./multirun "sh -c \"echo test > resultfile\""
+  [ -e resultfile ]
+  result=$(cat resultfile)
+  [ "$result" -eq "test" ]
+  rm resultfile
 }
