@@ -28,3 +28,15 @@
   rm resultfile1
   rm resultfile2
 }
+
+@test "returns 0" {
+  run ./multirun "sh -c \"exit 0\""
+  [ "$status" -eq 0 ]
+}
+
+@test "returns -1" {
+  run ./multirun "sh -c \"exit -1\""
+  [ "$status" -eq -1 ]
+  run ./multirun "sh -c \"exit 1\""
+  [ "$status" -eq -1 ]
+}
