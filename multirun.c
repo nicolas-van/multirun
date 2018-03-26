@@ -23,6 +23,7 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <signal.h>
+#include <getopt.h>
 
 typedef struct {
     pid_t pid;
@@ -45,7 +46,7 @@ int closing = 0;
 
 int main(int argc, char* const* argv) {
     int opt;
-    
+
     while ((opt = getopt(argc, argv, "vh")) != -1) {
         switch (opt) {
         case 'v':
@@ -72,9 +73,9 @@ int main(int argc, char* const* argv) {
 void launch_processes() {
     int wstatus;
     struct sigaction ssig;
-    
+
     subprocesses = malloc(sizeof(subprocess) * nbr_processes);
-    
+
     for (int i = 0; i < nbr_processes; i++) {
         pid_t pid = fork();
         if (pid == 0) {
@@ -92,13 +93,13 @@ void launch_processes() {
             subprocesses[i] = new_sub;
         }
     }
-    
+
     ssig.sa_handler = sig_receive;
     if (sigaction(SIGINT, &ssig, NULL))
         exit(-1);
     if (sigaction(SIGTERM, &ssig, NULL))
         exit(-1);
-    
+
     while (1) {
         pid_t pid = wait(&wstatus);
         subprocess* process = NULL;
