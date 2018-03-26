@@ -1,3 +1,5 @@
 language: c
+install:
+  - git clone --branch v0.4.0 https://github.com/sstephenson/bats.git
 script:
   - make
