@@ -1,6 +1,8 @@
 
 # multirun
 
+[![Build Status](https://travis-ci.org/nicolas-van/multirun.svg?branch=master)](https://travis-ci.org/nicolas-van/multirun)
+
 A simple Unix utility in C to run multiple commands concurrently.
 
 * A very light alternative to classic init processes or supervisord to run multiple services in the same Docker container.
@@ -15,10 +17,6 @@ Usage: `multirun "command1" "command2" ...`
 You can also add the `-v` option to get a full log of the processes it starts and kills.
 
 multirun never attempts to restart one of its children if it crashes. Instead it will kill all its other children before exiting with an error code. This behavior is ideal for a Docker container as the restart behavior can be delegated to the upper level, as example using systemd or Docker restart policies.
-
-## Build Status
-
-[![Build Status](https://travis-ci.org/nicolas-van/multirun.svg?branch=master)](https://travis-ci.org/nicolas-van/multirun)
 
 ## Installation
 
