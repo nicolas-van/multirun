@@ -1,0 +1,53 @@
+kind: pipeline
+name: default
+
+steps:
+- name: musl
+  image: alpine:latest
+  volumes:
+  - name: dist
+    path: /dist
+  commands:
+  - apk update
+  - apk add bats gcc make musl-dev
+  - make clean 
+  - make
+  - make test
+  - tar czvf /dist/multirun-musl-${DRONE_TAG:-not_tagged}.tar.gz multirun
+
+- name: glibc
+  image: gcc
+  volumes:
+  - name: dist
+    path: /dist
+  commands:
+  - apt-get update
+  - apt-get install -y bats
+  - echo "check if there is anything left"
+  - ls -lah
+  - make clean 
+  - make
+  - make test
+  - tar czvf /dist/multirun-glibc-${DRONE_TAG:-not_tagged}.tar.gz multirun
+
+- name: publish
+  image: plugins/github-release
+  volumes:
+  - name: dist
+    path: /dist
+  settings:
+    api_key:
+      from_secret: github_token
+    files: /dist/*.tar.gz
+    checksum:
+    - sha256
+    - sha512
+    - adler32
+    - crc32
+  when:
+    event:
+    - tag
+
+volumes:
+- name: dist
+  temp: {}
