@@ -1,18 +1,22 @@
-#!/bin/sh
+#!/bin/bash
 
-rm multirun
+rm -f multirun
 cp Dockerfile.ubuntu Dockerfile
 docker build -t multirun-build-ubuntu:latest .
-docker run -it --rm -v /tmp/dist:/dist multirun-build-ubuntu:latest
-mv /tmp/dist/multirun .
+mkdir -p dist
+docker run -it --rm -v $(pwd)/dist:/dist multirun-build-ubuntu:latest
+cp dist/multirun multirun
+rm -rf dist
 tar zcvf multirun-ubuntu-$1.tar.gz multirun
 rm Dockerfile
 
-rm multirun
+rm -f multirun
 cp Dockerfile.alpine Dockerfile
 docker build -t multirun-build-alpine:latest .
-docker run -it --rm -v /tmp/dist:/dist multirun-build-alpine:latest
-mv /tmp/dist/multirun .
+mkdir -p dist
+docker run -it --rm -v $(pwd)/dist:/dist multirun-build-alpine:latest
+cp dist/multirun multirun
+rm -rf dist
 tar zcvf multirun-alpine-$1.tar.gz multirun
 rm Dockerfile
 
