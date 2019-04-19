@@ -6,6 +6,10 @@ multirun: multirun.c
 test: multirun
 	bats tests.bats
 
+.PHONY: clean
+clean:
+	-rm multirun
+
 .PHONY: install
 install: multirun
 	mkdir -p $(DESTDIR)$(PREFIX)/bin
