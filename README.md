@@ -1,7 +1,7 @@
 
 # multirun
 
-[![Build Status](https://travis-ci.org/nicolas-van/multirun.svg?branch=master)](https://travis-ci.org/nicolas-van/multirun)
+[![Build Status](https://cloud.drone.io/api/badges/nicolas-van/multirun/status.svg)](https://cloud.drone.io/nicolas-van/multirun)
 
 A simple Unix utility in C to run multiple commands concurrently.
 
