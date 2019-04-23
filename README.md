@@ -22,17 +22,17 @@ multirun never attempts to restart one of its children if it crashes. Instead it
 
 ### Binary using glibc (Ubuntu, Debian, Red Hat, Centos...)
 
-    wget https://github.com/nicolas-van/multirun/releases/download/0.3.0/multirun-ubuntu-0.3.2.tar.gz && \
-    tar -zxvf multirun-ubuntu-0.3.2.tar.gz && \
+    wget https://github.com/nicolas-van/multirun/releases/download/0.3.2/multirun-glibc-0.3.2.tar.gz && \
+    tar -zxvf multirun-glibc-0.3.2.tar.gz && \
     mv multirun /bin && \
-    rm multirun-ubuntu-0.3.2.tar.gz
+    rm multirun-glibc-0.3.2.tar.gz
     
 ### Binary using musl libc (Alpine)
 
-    wget https://github.com/nicolas-van/multirun/releases/download/0.3.0/multirun-alpine-0.3.2.tar.gz && \
-    tar -zxvf multirun-alpine-0.3.2.tar.gz && \
+    wget https://github.com/nicolas-van/multirun/releases/download/0.3.2/multirun-musl-0.3.2.tar.gz && \
+    tar -zxvf multirun-musl-0.3.2.tar.gz && \
     mv multirun /bin && \
-    rm multirun-alpine-0.3.2.tar.gz
+    rm multirun-musl-0.3.2.tar.gz
     
 ### Sources
 
