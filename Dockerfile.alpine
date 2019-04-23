@@ -1,9 +1,0 @@
-from alpine
-
-run apk update
-run apk add alpine-sdk
-add . /root/multirun
-
-volume ["/dist"]
-
-cmd sh -c "cd /root/multirun; make; cp multirun /dist"
