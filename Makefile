@@ -5,7 +5,7 @@ CPPFLAGS := -DFORTIFY_SOURCE=2
 LDFLAGS := -static -Wl,-O1,--sort-common,--as-needed,-z,relro,-z,now,--hash-style=gnu,-Bstatic
 
 multirun: multirun.c
-	$(CC) -c -o $@.o $(CFLAGS) $^
+	$(CC) -c -o $@.o $(CPPFLAGS) $(CFLAGS) $^
 	$(CC) -o $@ $(LDFLAGS) $@.o
 
 test: multirun
