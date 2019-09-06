@@ -20,6 +20,12 @@ multirun never attempts to restart one of its children if it crashes. Instead it
 
 ## Installation
 
+## Package Manager (Alpine only)
+
+```
+apk add multirun
+```
+
 ### Binary using glibc (Ubuntu, Debian, Red Hat, Centos...)
 
     wget https://github.com/nicolas-van/multirun/releases/download/0.3.2/multirun-glibc-0.3.2.tar.gz && \
