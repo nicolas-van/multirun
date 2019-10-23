@@ -20,27 +20,35 @@ multirun never attempts to restart one of its children if it crashes. Instead it
 
 ## Installation
 
-## Package Manager (Alpine only)
+### Alpine
+
+#### Package manager
 
 ```
 apk add multirun
 ```
 
-### Binary using glibc (Ubuntu, Debian, Red Hat, Centos...)
+#### Binary install
 
-    wget https://github.com/nicolas-van/multirun/releases/download/0.3.2/multirun-glibc-0.3.2.tar.gz && \
-    tar -zxvf multirun-glibc-0.3.2.tar.gz && \
-    mv multirun /bin && \
-    rm multirun-glibc-0.3.2.tar.gz
-    
-### Binary using musl libc (Alpine)
+```
+wget https://github.com/nicolas-van/multirun/releases/download/0.3.2/multirun-musl-0.3.2.tar.gz && \
+tar -zxvf multirun-musl-0.3.2.tar.gz && \
+mv multirun /bin && \
+rm multirun-musl-0.3.2.tar.gz
+```
 
-    wget https://github.com/nicolas-van/multirun/releases/download/0.3.2/multirun-musl-0.3.2.tar.gz && \
-    tar -zxvf multirun-musl-0.3.2.tar.gz && \
-    mv multirun /bin && \
-    rm multirun-musl-0.3.2.tar.gz
-    
-### Sources
+### Ubuntu, Debian, Red Hat, Centos...
+
+#### Binary install
+
+```
+wget https://github.com/nicolas-van/multirun/releases/download/0.3.2/multirun-glibc-0.3.2.tar.gz && \
+tar -zxvf multirun-glibc-0.3.2.tar.gz && \
+mv multirun /bin && \
+rm multirun-glibc-0.3.2.tar.gz
+```
+
+### From sources
 
     git clone --branch 0.3.2 https://github.com/nicolas-van/multirun.git && \
     cd multirun && \
