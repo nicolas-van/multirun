@@ -67,7 +67,7 @@ One container is meant to contain one application. If you want to deploy multipl
 
 Then there is the remaining 1% where it's hard to define precisely what an application is. An application is not just a single process (countless web servers and databases spawn multiple processes for performance reason) nor a number of processes doing the same thing (again, a lot of applications spawn different processes with different purposes). Multirun, or any process manager in general, should be considered in a Docker container only for those specific cases where you consider that a single application necessitate multiple processes to fulfill its single purpose.
 
-Here are some good use cases where multirun can be usefull:
+Here are some good use cases where multirun can be useful:
 
 * *You want to launch multiple homogeneous single-threaded processes to effectively use multiple CPUs (and, for some reason, scaling your containers doesn't fit you):* There often exist more specialized solutions for this but for simple needs multirun can be useful.
 * *You have multiple heterogeneous processes that serve the same purpose, use the same filesystem and that filesystem isn't meant to be persisted (AKA you don't want to use volumes for that filesystem):* Multirun can be useful.
