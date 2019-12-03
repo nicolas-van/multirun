@@ -56,8 +56,10 @@ rm multirun-glibc-0.3.2.tar.gz
     cp multirun /bin && \
     cd .. && \
     rm -rf multirun
-    
-## When to use multirun in a Docker container
+   
+## FAQ
+   
+### When to use multirun in a Docker container
 
 **The Docker documentation and most best practices documents regarding Docker tells that you should embed no more than one application per container**. This is indeed perfectly true.
 
