@@ -56,6 +56,23 @@ rm multirun-glibc-0.3.2.tar.gz
     cp multirun /bin && \
     cd .. && \
     rm -rf multirun
+    
+## When to use multirun in a Docker container
+
+**The Docker documentation and most best practices documents regarding Docker tells that you should embed no more than one application per container**. This is indeed perfectly true.
+
+One container is meant to contain one application. If you want to deploy multiple applications at once (like a web server and a database) you should arrange your containers to properly communicate with the external world using network and volumes, make them easily configurable though environment variables and pack everything in a [docker-compose](https://docs.docker.com/compose/) or similar tool configuration. That is the correct way to do the job 99% of the time. It will allow you to keep each application separate from each other, to isolate their respective environments, to manage their lifecycle separately, to identify clearly which volume is dedicated to what, to scale all applications independently, etc...
+
+Then there is the remaining 1% where it's hard to define precisely what an application is. An application is not just a single process (countless web servers and databases spawn multiple processes for performance reason) nor a number of processes doing the same thing (again, a lot of applications spawn different processes with different purposes). Multirun, or any process manager in general, should be considered in a Docker container only for those specific cases where you consider that a single application necessitate multiple processes to fulfill its single purpose.
+
+Here are some good use cases where multirun can be usefull:
+
+* *You want to launch multiple homogeneous single-threaded processes to effectively use multiple CPUs (and, for some reason, scaling your containers doesn't fit you):* There often exist more specialized solutions for this but for simple needs multirun can be useful.
+* *You have multiple heterogeneous processes that serve the same purpose, use the same filesystem and that filesystem isn't meant to be persisted (AKA you don't want to use volumes for that filesystem):* Multirun can be useful.
+
+Here is an example of bad use case:
+
+* *You want to pack a web server, a scheduler, a message queue, some workers and a database in a single container to make it "easy" to deploy:* No no no, you're doing it wrong. Go learn about docker-compose, modify a little bit your application to properly use environment variables for things like database address and credentials, create a proper documentation and example `docker-compose.yml` file and send it to persons that need to deploy your application. It may seem more complicated but it's not. On the long run you will be much more effective in your Docker usage.
 
 ## Contributing
 
