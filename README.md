@@ -70,7 +70,7 @@ Then there is the remaining 5% where it's hard to define precisely what an appli
 Here are some good use cases where multirun can be useful:
 
 * *You want to launch multiple homogeneous single-threaded processes to effectively use multiple CPUs (and, for some reason, scaling your containers doesn't fit you):* There often exist some technology-specific solutions for this but for simple needs multirun can be useful.
-* *You need to deploy an old-school Unix-style multi-process "I've been coded in the 80s" (also known as "Those kids they have it too easy with all their threads and their high-level languages") service where the same base code yields multiple executable files that must all run concurrently:* Multirun can be useful.
+* *You need to deploy an old-school Unix-style multi-process "I've been coded in the 80s" "Those kids they have it too easy with all their threads and their high-level languages" service where the same base code yields multiple executable files that must all run concurrently:* Multirun can be useful.
 * *You have multiple heterogeneous processes that serve the same purpose, use the same filesystem and that filesystem isn't meant to be persisted (AKA you don't want to use volumes for that filesystem):* Multirun can be useful.
 
 Here is an example of bad use case:
