@@ -75,7 +75,7 @@ Here are some good use cases where multirun can be useful:
 
 Here is an example of bad use case:
 
-* You want to pack a web server, a scheduler, a message queue, some workers and a database in a single container to make it "easy" to deploy: No no no, you're doing it wrong. Go learn about docker-compose, modify a little bit your application to properly use environment variables for things like database address and credentials, create a proper documentation and example `docker-compose.yml` file and send it to persons that need to deploy your application. It may seem more complicated but it's not. On the long run you will be much more effective in your Docker usage.
+* You want to pack a web server, a scheduler, a message queue, some workers and a database in a single container to make it "easy" to deploy: No no no, you're doing it wrong. Go learn about docker-compose, modify a little bit your application to properly use environment variables for things like database address and credentials, create a proper documentation, split everything into seperate containers in an example `docker-compose.yml` file and send it to persons that need to deploy your application. It may seem more complicated but it's not. On the long run you will be much more effective in your Docker usage.
 
 ## Contributing
 
