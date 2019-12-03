@@ -61,7 +61,7 @@ rm multirun-glibc-0.3.2.tar.gz
    
 ### When to use multirun in a Docker container
 
-**The Docker documentation and most best practices documents regarding Docker tells that you should embed no more than one application per container**. This is indeed perfectly true.
+*The Docker documentation and most best practices documents regarding Docker tells that you should embed no more than one application per container*. This is indeed perfectly true.
 
 One container is meant to contain one application. If you want to deploy multiple applications at once (like a web server and a database) you should arrange your containers to properly communicate with the external world using network and volumes, make them easily configurable though environment variables and pack everything in a [docker-compose](https://docs.docker.com/compose/) or similar tool configuration. That is the correct way to do the job 95% of the time. It will allow you to keep each application separate from each other, to isolate their respective environments, to manage their lifecycle separately, to identify clearly which volume is dedicated to what, to scale all applications independently, etc...
 
