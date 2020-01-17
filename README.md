@@ -52,7 +52,8 @@ rm multirun-glibc-0.3.2.tar.gz
 
     git clone --branch 0.3.2 https://github.com/nicolas-van/multirun.git && \
     cd multirun && \
-    make && \
+    cmake . && \
+    cmake --build . && \
     cp multirun /bin && \
     cd .. && \
     rm -rf multirun

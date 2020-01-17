@@ -3,7 +3,7 @@
 @test "simple command invocation" {
   rm resultfile 2> /dev/null || true
 
-  ./build/multirun \
+  ./multirun \
     "sh -c \"echo test > resultfile\""
   [ -e resultfile ]
   result=$(cat resultfile)
@@ -15,7 +15,7 @@
   rm resultfile1 2> /dev/null || true
   rm resultfile2 2> /dev/null || true
 
-  ./build/multirun \
+  ./multirun \
     "sh -c \"echo test > resultfile1; sleep 1\"" \
     "sh -c \"echo test > resultfile2; sleep 1\""
   [ -e resultfile1 ]
@@ -30,13 +30,13 @@
 }
 
 @test "returns 0" {
-  run ./build/multirun "sh -c \"exit 0\""
+  run ./multirun "sh -c \"exit 0\""
   [ "$status" -eq 0 ]
 }
 
 @test "returns -1" {
-  run ./build/multirun "sh -c \"exit -1\""
+  run ./multirun "sh -c \"exit -1\""
   [ "$status" -eq 255 ]
-  run ./build/multirun "sh -c \"exit 1\""
+  run ./multirun "sh -c \"exit 1\""
   [ "$status" -eq 255 ]
 }

@@ -11,12 +11,9 @@ steps:
   - apk update
   - apk add bats gcc make musl-dev cmake
   - mkdir -p build
-  - cd build
-  - cmake ..
+  - cmake .
   - cmake --build .
-  - cd ..
   - bats tests.bats
-  - cd build
   - tar czvf /dist/multirun-musl-${DRONE_TAG:-not_tagged}.tar.gz multirun
 
 - name: glibc
@@ -29,12 +26,9 @@ steps:
   - apt-get install -y bats cmake
   - echo "check if there is anything left"
   - mkdir -p build
-  - cd build
-  - cmake ..
+  - cmake .
   - cmake --build .
-  - cd ..
   - bats tests.bats
-  - cd build
   - tar czvf /dist/multirun-glibc-${DRONE_TAG:-not_tagged}.tar.gz multirun
 
 - name: publish
