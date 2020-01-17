@@ -9,10 +9,14 @@ steps:
     path: /dist
   commands:
   - apk update
-  - apk add bats gcc make musl-dev
-  - make clean 
-  - make
-  - make test
+  - apk add bats gcc make musl-dev cmake
+  - mkdir -p build
+  - cd build
+  - cmake ..
+  - cmake --build .
+  - cd ..
+  - bats tests.bats
+  - cd build
   - tar czvf /dist/multirun-musl-${DRONE_TAG:-not_tagged}.tar.gz multirun
 
 - name: glibc
@@ -22,12 +26,15 @@ steps:
     path: /dist
   commands:
   - apt-get update
-  - apt-get install -y bats
+  - apt-get install -y bats cmake
   - echo "check if there is anything left"
-  - ls -lah
-  - make clean 
-  - make
-  - make test
+  - mkdir -p build
+  - cd build
+  - cmake ..
+  - cmake --build .
+  - cd ..
+  - bats tests.bats
+  - cd build
   - tar czvf /dist/multirun-glibc-${DRONE_TAG:-not_tagged}.tar.gz multirun
 
 - name: publish

@@ -1,3 +1,1 @@
-multirun
-*.tar.gz
-*.o
+/build
