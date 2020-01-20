@@ -24,13 +24,13 @@ Unlink most process managers multirun never attempts to restart one of its child
 
 #### Package manager
 
-```
+```bash
 apk add multirun
 ```
 
 #### Binary install
 
-```
+```bash
 wget https://github.com/nicolas-van/multirun/releases/download/0.3.2/multirun-musl-0.3.2.tar.gz && \
 tar -zxvf multirun-musl-0.3.2.tar.gz && \
 mv multirun /bin && \
@@ -41,7 +41,7 @@ rm multirun-musl-0.3.2.tar.gz
 
 #### Binary install
 
-```
+```bash
 wget https://github.com/nicolas-van/multirun/releases/download/0.3.2/multirun-glibc-0.3.2.tar.gz && \
 tar -zxvf multirun-glibc-0.3.2.tar.gz && \
 mv multirun /bin && \
@@ -50,13 +50,15 @@ rm multirun-glibc-0.3.2.tar.gz
 
 ### From sources
 
-    git clone --branch 0.3.2 https://github.com/nicolas-van/multirun.git && \
-    cd multirun && \
-    cmake . && \
-    cmake --build . && \
-    cp multirun /bin && \
-    cd .. && \
-    rm -rf multirun
+```bash
+git clone --branch 0.3.2 https://github.com/nicolas-van/multirun.git && \
+cd multirun && \
+cmake . && \
+cmake --build . && \
+cp multirun /bin && \
+cd .. && \
+rm -rf multirun
+```
    
 ## FAQ
    
