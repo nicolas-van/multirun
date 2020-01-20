@@ -23,6 +23,7 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <signal.h>
+#include "config.h"
 
 typedef struct {
     pid_t pid;
@@ -165,6 +166,8 @@ void launch_processes() {
 
 void print_help() {
     printf("Usage: multirun <options> command...\n");
+    printf("\n");
+    printf("Version: %s\n", PROJECT_VERSION);
     printf("\n");
     printf("multirun is a small utility to run multiple commands concurrently. ");
     printf("If one of these commands terminate it will kill all the others.\n");

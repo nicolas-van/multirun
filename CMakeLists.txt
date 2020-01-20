@@ -3,7 +3,11 @@ cmake_minimum_required(VERSION 3.10)
 set(CMAKE_C_STANDARD 99)
 
 # set the project name
-project(multirun C)
+project(multirun VERSION 0.3.2 LANGUAGES C)
 
-# add the executable
+configure_file(config.h.in config.h)
+
 add_executable(multirun multirun.c)
+
+target_include_directories(multirun PUBLIC "${PROJECT_BINARY_DIR}")
+
