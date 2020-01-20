@@ -31,10 +31,10 @@ apk add multirun
 #### Binary install
 
 ```bash
-wget https://github.com/nicolas-van/multirun/releases/download/0.3.2/multirun-musl-0.3.2.tar.gz && \
-tar -zxvf multirun-musl-0.3.2.tar.gz && \
+wget https://github.com/nicolas-van/multirun/releases/download/1.0.0/multirun-musl-1.0.0.tar.gz && \
+tar -zxvf multirun-musl-1.0.0.tar.gz && \
 mv multirun /bin && \
-rm multirun-musl-0.3.2.tar.gz
+rm multirun-musl-1.0.0.tar.gz
 ```
 
 ### Ubuntu, Debian, Red Hat, Centos...
@@ -42,16 +42,16 @@ rm multirun-musl-0.3.2.tar.gz
 #### Binary install
 
 ```bash
-wget https://github.com/nicolas-van/multirun/releases/download/0.3.2/multirun-glibc-0.3.2.tar.gz && \
-tar -zxvf multirun-glibc-0.3.2.tar.gz && \
+wget https://github.com/nicolas-van/multirun/releases/download/1.0.0/multirun-glibc-1.0.0.tar.gz && \
+tar -zxvf multirun-glibc-1.0.0.tar.gz && \
 mv multirun /bin && \
-rm multirun-glibc-0.3.2.tar.gz
+rm multirun-glibc-1.0.0.tar.gz
 ```
 
 ### From sources
 
 ```bash
-git clone --branch 0.3.2 https://github.com/nicolas-van/multirun.git && \
+git clone --branch 1.0.0 https://github.com/nicolas-van/multirun.git && \
 cd multirun && \
 cmake . && \
 cmake --build . && \
