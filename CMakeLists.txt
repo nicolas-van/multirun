@@ -11,3 +11,4 @@ add_executable(multirun multirun.c)
 
 target_include_directories(multirun PUBLIC "${PROJECT_BINARY_DIR}")
 
+install(TARGETS multirun DESTINATION bin)
