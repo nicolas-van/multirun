@@ -92,6 +92,11 @@ jobs:
       - name: Compress
         run: |
           mkdir -p ./artifacts
+          if [[ $GITHUB_REF_TYPE =~ ^tag$ ]]; then
+            TAG=$GITHUB_REF_NAME
+          else
+            TAG=$GITHUB_SHA
+          fi
           tar -czf ./artifacts/$NAME-$TARGET-${{github.ref_name}}.tar.gz $NAME
       - name: Archive artifact
         uses: actions/upload-artifact@v2
