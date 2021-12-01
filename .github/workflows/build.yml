@@ -1,0 +1,119 @@
+name: Build
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install and configure dependencies
+        run: |
+          sudo apt-get install -qq bats
+      - uses: actions/checkout@v2
+      - name: Build
+        run: |
+          cmake .
+          cmake --build .
+      - name: Test
+        run: bats tests.bats
+
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - TARGET: x86_64-linux-gnu # the native build, tested in a container on a mac
+            OS: ubuntu-latest
+            CC: cc
+          - TARGET: x86_64-linux-musl # tested in an alpine container on a mac
+            OS: ubuntu-latest
+            CC: x86_64-linux-musl-gcc
+          - TARGET: aarch64-linux-gnu # tested on aws t4g.nano
+            OS: ubuntu-latest
+            CC: aarch64-linux-gnu-gcc
+          - TARGET: aarch64-linux-musl # tested in an alpine container on aws t4g.nano
+            OS: ubuntu-latest
+            CC: aarch64-linux-musl-gcc
+          - TARGET: arm-linux-gnueabihf # tested on a Raspberry Pi 400
+            OS: ubuntu-latest
+            CC: arm-linux-gnueabihf-gcc
+          - TARGET: arm-linux-musl # tested in an alphine container on a Raspberry Pi 400
+            OS: ubuntu-latest
+            CC: arm-linux-musleabihf-gcc
+          - TARGET: x86_64-apple-darwin # tested on a mac, is not properly signed so there are security warnings
+            OS: macos-latest
+            CC: cc
+    needs: test
+    runs-on: ${{ matrix.OS }}
+    env:
+      NAME: multirun
+      TARGET: ${{ matrix.TARGET }}
+      OS: ${{ matrix.OS }}
+      CC: ${{ matrix.CC }}
+    steps:
+      - name: Musl compilers cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/musl-compilers
+          key: build-musl-compilers-dir
+      - name: Install and configure dependencies
+        run: |
+          # dependencies are only needed on ubuntu as that's the only place where
+          # we make cross-compilation
+          if [[ $OS =~ ^ubuntu.*$ ]]; then
+            sudo apt-get install -qq crossbuild-essential-arm64 crossbuild-essential-armhf
+          fi
+          # download musl compilers
+          mkdir -p $HOME/musl-compilers
+          pushd $HOME/musl-compilers
+          if [[ ! -d x86_64-linux-musl-cross ]]; then
+            wget -q -c http://musl.cc/x86_64-linux-musl-cross.tgz -O - | tar -xz
+          fi
+          if [[ ! -d aarch64-linux-musl-cross ]]; then
+            wget -q -c http://musl.cc/aarch64-linux-musl-cross.tgz -O - | tar -xz
+          fi
+          if [[ ! -d arm-linux-musleabihf-cross ]]; then
+            wget -q -c http://musl.cc/arm-linux-musleabihf-cross.tgz -O - | tar -xz
+          fi
+          popd
+      - uses: actions/checkout@v2
+      - name: List
+        run: find .
+      - name: Build
+        run: |
+          export PATH=$PATH:$HOME/musl-compilers/x86_64-linux-musl-cross/bin
+          export PATH=$PATH:$HOME/musl-compilers/aarch64-linux-musl-cross/bin
+          export PATH=$PATH:$HOME/musl-compilers/arm-linux-musleabihf-cross/bin
+          cmake .
+          cmake --build .
+      - name: Compress
+        run: |
+          mkdir -p ./artifacts
+          tar -czf ./artifacts/$NAME-$TARGET-${{github.ref_name}}.tar.gz $NAME
+      - name: Archive artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: result
+          path: |
+            ./artifacts
+
+  # deploys to github releases on tag
+  deploy:
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: result
+          path: ./artifacts
+      - name: List
+        run: find ./artifacts
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ./artifacts/*.tar.gz
