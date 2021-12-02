@@ -1,7 +1,7 @@
 
 # multirun
 
-[![Build Status](https://cloud.drone.io/api/badges/nicolas-van/multirun/status.svg)](https://cloud.drone.io/nicolas-van/multirun)
+[![Build](https://github.com/nicolas-van/multirun/actions/workflows/build.yml/badge.svg)](https://github.com/nicolas-van/multirun/actions/workflows/build.yml)
 
 A simple Unix utility in C to run multiple commands concurrently.
 
@@ -20,44 +20,48 @@ Unlink most process managers multirun never attempts to restart one of its child
 
 ## Installation
 
-### Alpine
+### Package manager
 
-#### Package manager
+Currently, multirun is only present in Alpine's distribution
+
+#### Alpine
+
 
 ```bash
 apk add multirun
 ```
 
-#### Binary install
+### Binary install
+
+The [release page](https://github.com/nicolas-van/multirun/releases) lists all provided binaries.
+
+Here is an example install script for an x86_64 Linux using GNU libc. Replace the URL with another one if you use another system.
 
 ```bash
-wget https://github.com/nicolas-van/multirun/releases/download/1.0.0/multirun-musl-1.0.0.tar.gz && \
-tar -zxvf multirun-musl-1.0.0.tar.gz && \
-mv multirun /bin && \
-rm multirun-musl-1.0.0.tar.gz
+wget -c https://github.com/nicolas-van/multirun/releases/download/1.0.1/multirun-x86_64-linux-gnu-1.0.1.tar.gz -O - | tar -xz && \
+mv multirun /bin
 ```
 
-### Ubuntu, Debian, Red Hat, Centos...
+We provide binaries for the following systems:
 
-#### Binary install
-
-```bash
-wget https://github.com/nicolas-van/multirun/releases/download/1.0.0/multirun-glibc-1.0.0.tar.gz && \
-tar -zxvf multirun-glibc-1.0.0.tar.gz && \
-mv multirun /bin && \
-rm multirun-glibc-1.0.0.tar.gz
-```
+* x86_64 Linux, both using glibc (for most systems) and musl libc (for Alpine containers)
+* aarch64 Linux (for cheaper servers like AWS EC2 t4g line), both using glibc and musl libc
+* arm Linux (for Raspberry Pi), both using glibc and musl libc
+* x86_64 Mac OS X
 
 ### From sources
 
+This project necessitates CMake.
+
 ```bash
-git clone --branch 1.0.0 https://github.com/nicolas-van/multirun.git && \
-cd multirun && \
+wget -c https://github.com/nicolas-van/multirun/archive/refs/tags/1.0.1.tar.gz -O - | tar -xz && \
+mv multirun-1.0.1 multirun-src && \
+cd multirun-src && \
 cmake . && \
 cmake --build . && \
 cp multirun /bin && \
 cd .. && \
-rm -rf multirun
+rm -rf multirun-src
 ```
    
 ## FAQ
@@ -78,7 +82,7 @@ Here are some good use cases where multirun can be useful:
 
 Here is an example of bad use case:
 
-* You want to pack a web server, a scheduler, a message queue, some workers and a database in a single container to make it "easy" to deploy: No no no, you're doing it wrong. Go learn about docker-compose, modify a little bit your application to properly use environment variables for things like database address and credentials, create a proper documentation, split everything into separate containers in an example `docker-compose.yml` file and send it to persons that need to deploy your application. It may seem more complicated but it's not. On the long run you will be much more effective in your Docker usage.
+* You want to pack a web server, a scheduler, a message queue, some workers and a database in a single container to make it "easy" to deploy: No no no, you're doing it wrong. Go learn about docker-compose, modify a little bit your application to properly use environment variables for things like database address and credentials, create a proper documentation, split everything into separate containers in an example `docker-compose.yml` file and send it to the persons that need to deploy your application. It may seem more complicated but it's not. On the long run you will be much more effective in your Docker usage.
 
 ## Contributing
 
