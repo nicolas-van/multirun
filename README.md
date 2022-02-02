@@ -1,7 +1,6 @@
 
 # multirun
 
-
 [![Build](https://github.com/nicolas-van/multirun/actions/workflows/build.yml/badge.svg)](https://github.com/nicolas-van/multirun/actions/workflows/build.yml)
 
 A simple Unix utility in C to run multiple commands concurrently.
