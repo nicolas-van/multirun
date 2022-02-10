@@ -86,7 +86,7 @@ Here is an example of bad use case:
 
 ### My processes do not exit correctly
 
-A common source causing these problems is invalid usage of shell scripts that causes signals to not be propagated properly.
+A common cause for these problems is invalid usage of shell scripts that causes signals to not be propagated properly.
 
 If you call multirun in a shell script, check that you launch it with the `exec` sh command. Example:
 
