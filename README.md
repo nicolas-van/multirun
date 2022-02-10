@@ -99,7 +99,7 @@ exec multirun arg1 arg2
 
 This advice is not specific to multirun and does apply to most containers that have a shell script as entrypoint.
 
-Also, if you launch scripts with multirun that will launch the service you want, be sure to add `exec` in these scripts. Example:
+Also, if you launch scripts with multirun that will launch the service you want, be sure to add `exec` in these scripts as well. Example:
 
 ```bash
 # multirun call
