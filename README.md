@@ -84,6 +84,46 @@ Here is an example of bad use case:
 
 * You want to pack a web server, a scheduler, a message queue, some workers and a database in a single container to make it "easy" to deploy: No no no, you're doing it wrong. Go learn about docker-compose, modify a little bit your application to properly use environment variables for things like database address and credentials, create a proper documentation, split everything into separate containers in an example `docker-compose.yml` file and send it to the persons that need to deploy your application. It may seem more complicated but it's not. On the long run you will be much more effective in your Docker usage.
 
+### My processes do not exit correctly
+
+A common source causing these problems is invalid usage of shell scripts that causes signals to not be propagated properly.
+
+If you call multirun in a shell script, check that you launch it with the `exec` sh command. Example:
+
+```bash
+#!/bin/sh
+# any init code
+
+exec multirun arg1 arg2
+```
+
+This advice is not specific to multirun and does apply to most containers that have a shell script as entrypoint.
+
+Also, if you launch scripts with multirun that will launch the service you want, be sure to add `exec` in these scripts. Example:
+
+```bash
+# multirun call
+multirun ./service1.sh ./service2.sh
+```
+
+```bash
+# ./service1.sh
+#!/bin/sh
+
+# any init code
+
+exec service1_executable
+```
+
+```bash
+# ./service2.sh
+#!/bin/sh
+
+# any init code
+
+exec service2_executable
+```
+
 ## Contributing
 
 [See the contribution guide.](CONTRIBUTING.md)
