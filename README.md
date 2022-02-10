@@ -124,6 +124,8 @@ exec service1_executable
 exec service2_executable
 ```
 
+If it still doesn't work launch multirun in verbose mode and try to understand what's going on. Your problem is probably caused by a child process that doesn't exit properly or not fast enough when it receives a signal.
+
 ## Contributing
 
 [See the contribution guide.](CONTRIBUTING.md)
