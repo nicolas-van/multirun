@@ -46,7 +46,8 @@ int verbose = 0;
 char* const* commands;
 int nbr_processes = 0;
 subprocess* subprocesses = NULL;
-int closing = 0;
+int selfkilling = 0;
+pid_t pgid = 0;
 
 int main(int argc, char *const *argv) {
     int opt;
@@ -63,12 +64,12 @@ int main(int argc, char *const *argv) {
         default:
             printf("Unknown option: %c\n", (char)optopt);
             print_help();
-            exit(-1);
+            exit(-2);
         }
     }
     if (optind >= argc) {
         print_help();
-        exit(-1);
+        exit(-2);
     }
     commands = &argv[optind];
     nbr_processes = argc - optind;
@@ -76,6 +77,14 @@ int main(int argc, char *const *argv) {
 }
 
 void launch_processes() {
+    // declare a new group if not group leader
+    setpgrp();
+    pgid = getpgrp();
+
+    if (verbose) {
+        printf("multirun: using process group %d\n", pgid);
+    }
+
     int wstatus;
     struct sigaction ssig;
 
@@ -85,7 +94,7 @@ void launch_processes() {
         pid_t pid = fork();
         if (pid == 0) {
             sub_exec(commands[i]);
-            exit(-1); // should not happen
+            exit(-2); // should not happen
         } else {
             if (verbose) {
                 printf("multirun: launched command %s with pid %d\n", commands[i], pid);
@@ -101,12 +110,27 @@ void launch_processes() {
 
     ssig.sa_handler = sig_receive;
     if (sigaction(SIGINT, &ssig, NULL))
-        exit(-1);
+        exit(-2);
     if (sigaction(SIGTERM, &ssig, NULL))
-        exit(-1);
+        exit(-2);
 
     while (1) {
-        pid_t pid = wait(&wstatus);
+        pid_t pid = waitpid(-pgid, &wstatus, 0);
+
+        if (pid == -1) {
+            if (errno == ECHILD) {
+                printf("case 1\n");
+                break; // no more children
+            } if (errno == EINTR) {
+                continue; // interrupted
+            } else {
+                fprintf(stderr, "multirun: error during wait: %d\n", errno);
+                exit(-2);
+            }
+        } else if (pid == 0) {
+            break; // no more children
+        }
+
         subprocess* process = NULL;
         for (int i = 0; i < nbr_processes; i++) {
             if (subprocesses[i].pid == pid) {
@@ -114,6 +138,7 @@ void launch_processes() {
                 break;
             }
         }
+
         if (process != NULL) {
             // check if process is down
             if (WIFEXITED(wstatus) || WIFSIGNALED(wstatus)) {
@@ -129,33 +154,14 @@ void launch_processes() {
                         printf("multirun: command %s with pid %d exited normally\n", process->command, pid);
                     }
                 }
-                if (! closing) {
-                    closing = 1;
-                    // activate Goebbels mode
-                    if (verbose) {
-                        printf("multirun: sending SIGTERM to all subprocesses\n");
-                    }
-                    kill_all(SIGTERM);
-                }
             }
         } else {
             if (verbose) {
-                printf("multirun: reaped zombie process with pid %d\n", pid);
+                printf("multirun: subchild process with pid %d ended\n", pid);
             }
         }
-        // check if all processes are stopped
-        int running = 0;
-        for (int i = 0; i < nbr_processes; i++) {
-            if (subprocesses[i].up) {
-                running = 1;
-                break;
-            }
-        }
-        if (! running)
-            break;
+        kill_all(SIGTERM);
     }
-    // reap all potential zombies
-    reap_zombies();
     // check if there are errors
     int error = 0;
     for (int i = 0; i < nbr_processes; i++) {
@@ -199,44 +205,26 @@ void sub_exec(const char* command) {
     ret = execlp("sh", "sh", "-c", ccommand, (char*) NULL);
     if (ret != 0) {
         fprintf(stderr, "multirun: error launching the subprocess: %s\n", strerror(errno));
-        exit(-1);
+        exit(-2);
     }
 }
 
 void kill_all(int signal) {
-    for (int i = 0; i < nbr_processes; i++) {
-        kill(subprocesses[i].pid, signal);
+    selfkilling = 1;
+    int ret = kill(-pgid, signal);
+    if (ret != 0) {
+        fprintf(stderr, "multirun: error while killing processes\n");
+        exit(-2);
     }
 }
 
 void sig_receive(int signum) {
+    if (selfkilling) {
+        selfkilling = 0;
+        return;
+    }
     if (verbose) {
         printf("multirun: received signal %s, propagating to all subprocesses\n", strsignal(signum));
     }
-    if (signum == SIGTERM) {
-        closing = 1;
-    }
     kill_all(signum);
-}
-
-void reap_zombies() {
-    while (1) {
-        pid_t childpid;
-        int wstatus;
-		childpid = waitpid(-1, &wstatus, WNOHANG);
-        if (childpid == -1) {
-            if (errno == ECHILD) {
-                break;
-            } else {
-                fprintf(stderr, "multirun: error while reaping zombies\n");
-                exit(-1);
-            }
-        } else if (childpid == 0) {
-            break;
-        } else {
-            if (verbose) {
-                printf("multirun: reaped zombie process with pid %d\n", childpid);
-            }
-        }
-    }
 }
