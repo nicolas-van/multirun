@@ -114,7 +114,6 @@ void launch_processes() {
                 break;
             }
         }
-        // ignore unknown processes, these are likely zombie processes
         if (process != NULL) {
             // check if process is down
             if (WIFEXITED(wstatus) || WIFSIGNALED(wstatus)) {
@@ -138,6 +137,10 @@ void launch_processes() {
                     }
                     kill_all(SIGTERM);
                 }
+            }
+        } else {
+            if (verbose) {
+                printf("multirun: reaped zombie process with pid %d\n", pid);
             }
         }
         // check if all processes are stopped
