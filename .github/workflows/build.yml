@@ -96,7 +96,7 @@ jobs:
           else
             TAG=$GITHUB_SHA
           fi
-          tar -czf ./artifacts/$NAME-$TARGET-${{github.ref_name}}.tar.gz --directory build ./build/$NAME
+          tar -czf ./artifacts/$NAME-$TARGET-${{github.ref_name}}.tar.gz --directory build $NAME
       - name: Archive artifact
         uses: actions/upload-artifact@v2
         with:
