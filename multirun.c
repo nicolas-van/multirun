@@ -24,6 +24,10 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 #include <sys/wait.h>
 #include <signal.h>
 
+#ifndef PROJECT_VERSION
+#define PROJECT_VERSION "0.0.0"
+#endif
+
 typedef struct {
     pid_t pid;
     const char* command;
@@ -36,6 +40,7 @@ void launch_processes();
 void sub_exec(const char * command);
 void kill_all(int signal);
 void sig_receive(int signum);
+void reap_zombies();
 
 int verbose = 0;
 char* const* commands;
@@ -43,7 +48,7 @@ int nbr_processes = 0;
 subprocess* subprocesses = NULL;
 int closing = 0;
 
-int main(int argc, char* const* argv) {
+int main(int argc, char *const *argv) {
     int opt;
 
     while ((opt = getopt(argc, argv, "vh")) != -1) {
@@ -55,7 +60,8 @@ int main(int argc, char* const* argv) {
             print_help();
             exit(0);
             break;
-        default: /* '?' */
+        default:
+            printf("Unknown option: %c\n", (char)optopt);
             print_help();
             exit(-1);
         }
@@ -108,6 +114,7 @@ void launch_processes() {
                 break;
             }
         }
+        // ignore unknown processes, these are likely zombie processes
         if (process != NULL) {
             // check if process is down
             if (WIFEXITED(wstatus) || WIFSIGNALED(wstatus)) {
@@ -144,6 +151,8 @@ void launch_processes() {
         if (! running)
             break;
     }
+    // reap all potential zombies
+    reap_zombies();
     // check if there are errors
     int error = 0;
     for (int i = 0; i < nbr_processes; i++) {
@@ -205,4 +214,26 @@ void sig_receive(int signum) {
         closing = 1;
     }
     kill_all(signum);
-};
+}
+
+void reap_zombies() {
+    while (1) {
+        pid_t childpid;
+        int wstatus;
+		childpid = waitpid(-1, &wstatus, WNOHANG);
+        if (childpid == -1) {
+            if (errno == ECHILD) {
+                break;
+            } else {
+                fprintf(stderr, "multirun: error while reaping zombies\n");
+                exit(-1);
+            }
+        } else if (childpid == 0) {
+            break;
+        } else {
+            if (verbose) {
+                printf("multirun: reaped zombie process with pid %d\n", childpid);
+            }
+        }
+    }
+}
