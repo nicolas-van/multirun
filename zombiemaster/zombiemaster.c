@@ -54,6 +54,6 @@ void sig_receive_zombie_master(int signum) {
 }
 
 void sig_receive_zombie(int signum) {
-    printf("Me zombie, me received %s bullet in the head and survived\n", strsignal(signum));
+    printf("Me zombie, me received %s bullet in the head\n", strsignal(signum));
     exit(0);
 }
