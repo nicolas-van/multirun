@@ -23,7 +23,6 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <signal.h>
-#include "config.h"
 
 typedef struct {
     pid_t pid;
