@@ -13,8 +13,8 @@ jobs:
       - uses: actions/checkout@v2
       - name: Build
         run: |
-          cmake .
-          cmake --build .
+          cmake -S . -B build
+          cmake --build build
       - name: Test
         run: bats tests.bats
 
@@ -86,8 +86,8 @@ jobs:
           export PATH=$PATH:$HOME/musl-compilers/x86_64-linux-musl-cross/bin
           export PATH=$PATH:$HOME/musl-compilers/aarch64-linux-musl-cross/bin
           export PATH=$PATH:$HOME/musl-compilers/arm-linux-musleabihf-cross/bin
-          cmake .
-          cmake --build .
+          cmake -S . -B build
+          cmake --build build
       - name: Compress
         run: |
           mkdir -p ./artifacts
@@ -96,7 +96,7 @@ jobs:
           else
             TAG=$GITHUB_SHA
           fi
-          tar -czf ./artifacts/$NAME-$TARGET-${{github.ref_name}}.tar.gz $NAME
+          tar -czf ./artifacts/$NAME-$TARGET-${{github.ref_name}}.tar.gz ./build/$NAME
       - name: Archive artifact
         uses: actions/upload-artifact@v2
         with:
