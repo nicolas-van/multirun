@@ -57,9 +57,9 @@ This project necessitates CMake.
 wget -c https://github.com/nicolas-van/multirun/archive/refs/tags/1.0.1.tar.gz -O - | tar -xz && \
 mv multirun-1.0.1 multirun-src && \
 cd multirun-src && \
-cmake . && \
-cmake --build . && \
-cp multirun /bin && \
+cmake -S . -B build && \
+cmake --build build && \
+cp build/multirun /bin && \
 cd .. && \
 rm -rf multirun-src
 ```
