@@ -51,7 +51,7 @@ int main(int argc, char* const* argv) {
 
 void sig_receive_zombie_master(int signum) {
     printf("Me zombie master, me received %s bullet in the head\n", strsignal(signum));
-    //exit(0);
+    exit(0);
 }
 
 void sig_receive_zombie(int signum) {

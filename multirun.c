@@ -163,7 +163,6 @@ void launch_processes() {
             int pid = waitpid(-subprocesses[i].pid, &wstatus, 0);
             if (pid == -1) {
                 if (errno == ECHILD) {
-                    printf("%d group terminated\n", subprocesses[i].pid);
                     break; // no more children in group
                 } if (errno == EINTR) {
                     continue; // interrupted
