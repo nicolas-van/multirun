@@ -234,8 +234,12 @@ void kill_all(int signal) {
     for (int i = 0; i < nbr_processes; i++) {
         int ret = kill(-subprocesses[i].pid, signal);
         if (ret != 0) {
-            fprintf(stderr, "multirun: error while killing processes\n");
-            exit(-2);
+            if (errno == ESRCH) {
+                // ignore
+            } else {
+                fprintf(stderr, "multirun: error %d while killing processes\n", errno);
+                exit(-2);
+            }
         }
     }
 }
