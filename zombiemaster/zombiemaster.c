@@ -17,6 +17,8 @@ int stop = 0;
 int main(int argc, char* const* argv) {
     struct sigaction ssig;
     memset(&ssig, 0, sizeof ssig);
+    sigemptyset(&ssig.sa_mask);
+
     int nbr_processes = 1;
     printf("Executing zombie master\n");
     for (int i = 0; i < nbr_processes; i++) {
@@ -58,6 +60,7 @@ int main(int argc, char* const* argv) {
 
 void sig_receive_zombie_master(int signum) {
     printf("Me zombie master, me received %s bullet in the head\n", strsignal(signum));
+    exit(0);
     stop = 1;
 }
 
