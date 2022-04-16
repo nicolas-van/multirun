@@ -77,6 +77,7 @@ int main(int argc, char *const *argv) {
 
 void launch_processes() {
     struct sigaction ssig;
+    memset(&ssig, 0, sizeof ssig);
 
     subprocesses = malloc(sizeof(subprocess) * nbr_processes);
 
