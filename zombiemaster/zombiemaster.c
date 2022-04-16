@@ -16,6 +16,7 @@ int stop = 0;
 
 int main(int argc, char* const* argv) {
     struct sigaction ssig;
+    memset(&ssig, 0, sizeof ssig);
     int nbr_processes = 1;
     printf("Executing zombie master\n");
     for (int i = 0; i < nbr_processes; i++) {
