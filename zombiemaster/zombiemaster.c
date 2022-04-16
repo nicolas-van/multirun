@@ -12,6 +12,8 @@
 void sig_receive_zombie_master(int signum);
 void sig_receive_zombie(int signum);
 
+int stop = 0;
+
 int main(int argc, char* const* argv) {
     struct sigaction ssig;
     int nbr_processes = 1;
@@ -25,11 +27,13 @@ int main(int argc, char* const* argv) {
                 exit(-2);
             if (sigaction(SIGTERM, &ssig, NULL))
                 exit(-2);
-            while (1) {
+            while (!stop) {
                 sleep(1);
             }
+            printf("Zombie %d sleeps a little\n", i);
+            sleep(3);
             printf("Hi! I'm zombie %d and I die\n", i);
-            exit(-1);
+            exit(0);
         } else {
             // nothing
         }
@@ -41,9 +45,11 @@ int main(int argc, char* const* argv) {
     if (sigaction(SIGTERM, &ssig, NULL))
         exit(-2);
 
-    while (1) {
-        sleep(3);
+    while (!stop) {
+        sleep(1);
     }
+    printf("Zombie master sleeps a little\n");
+    sleep(3);
     
     printf("Hi! I'm zombie master and I die\n");
     exit(0);
@@ -51,10 +57,10 @@ int main(int argc, char* const* argv) {
 
 void sig_receive_zombie_master(int signum) {
     printf("Me zombie master, me received %s bullet in the head\n", strsignal(signum));
-    exit(0);
+    stop = 1;
 }
 
 void sig_receive_zombie(int signum) {
     printf("Me zombie, me received %s bullet in the head\n", strsignal(signum));
-    exit(0);
+    stop = 1;
 }

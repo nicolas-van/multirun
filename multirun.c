@@ -139,6 +139,13 @@ void launch_processes() {
                 if ((WIFEXITED(wstatus) && WEXITSTATUS(wstatus) != 0)
                     || (WIFSIGNALED(wstatus) && WTERMSIG(wstatus) != SIGINT && WTERMSIG(wstatus) != SIGTERM)) {
                     process->error = 1;
+                    if (verbose) {
+                        printf("multirun: command %s with pid %d exited abnormally\n", process->command, process->pid);
+                    }
+                } else {
+                    if (verbose) {
+                        printf("multirun: command %s with pid %d exited normally\n", process->command, process->pid);
+                    }
                 }
                 if (! closing) {
                     closing = 1;
@@ -173,21 +180,7 @@ void launch_processes() {
             } else if (pid == 0) {
                 break; // no more children
             }
-            // something going wrong, try to send SIGTERM again
-            int ret = kill(-subprocesses[i].pid, SIGTERM);
-            if (ret != 0) {
-                fprintf(stderr, "multirun: error while killing processes\n");
-                exit(-2);
-            }
-        }
-        if (subprocesses[i].error) {
-            if (verbose) {
-                printf("multirun: command %s with pid %d exited abnormally\n", subprocesses[i].command, subprocesses[i].pid);
-            }
-        } else {
-            if (verbose) {
-                printf("multirun: command %s with pid %d exited normally\n", subprocesses[i].command, subprocesses[i].pid);
-            }
+            // some more child must still exit
         }
     }
 
