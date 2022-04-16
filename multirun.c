@@ -76,10 +76,6 @@ int main(int argc, char *const *argv) {
 }
 
 void launch_processes() {
-    struct sigaction ssig;
-    memset(&ssig, 0, sizeof ssig);
-    sigemptyset(&ssig.sa_mask);
-
     subprocesses = malloc(sizeof(subprocess) * nbr_processes);
 
     for (int i = 0; i < nbr_processes; i++) {
@@ -103,11 +99,12 @@ void launch_processes() {
         }
     }
 
-    ssig.sa_handler = sig_receive;
-    if (sigaction(SIGINT, &ssig, NULL))
+    if (signal(SIGINT, sig_receive) == SIG_ERR) {
         exit(-2);
-    if (sigaction(SIGTERM, &ssig, NULL))
+    }
+    if (signal(SIGTERM, sig_receive) == SIG_ERR) {
         exit(-2);
+    }
 
     while (1) {
         int wstatus;
