@@ -44,13 +44,14 @@ int main(int argc, char* const* argv) {
     while (1) {
         sleep(3);
     }
+    
     printf("Hi! I'm zombie master and I die\n");
     exit(0);
 }
 
 void sig_receive_zombie_master(int signum) {
     printf("Me zombie master, me received %s bullet in the head\n", strsignal(signum));
-    exit(0);
+    //exit(0);
 }
 
 void sig_receive_zombie(int signum) {

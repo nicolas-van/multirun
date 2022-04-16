@@ -8,7 +8,7 @@ A simple Unix utility in C to run multiple commands concurrently.
 * A very light alternative to classic init processes or supervisord to run multiple services in the same Docker container.
 * Is dead-simple to use.
 * Can be run without root permissions.
-* Cleanly kills all the processes it starts.
+* Cleanly kills all the processes it starts, including their subprocesses.
 * Delegates the restart duty to the upper level.
 * Forwards stdout and stderr for proper logging with Docker.
 

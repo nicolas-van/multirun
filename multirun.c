@@ -76,7 +76,6 @@ int main(int argc, char *const *argv) {
 }
 
 void launch_processes() {
-    int wstatus;
     struct sigaction ssig;
 
     subprocesses = malloc(sizeof(subprocess) * nbr_processes);
@@ -109,6 +108,7 @@ void launch_processes() {
         exit(-2);
 
     while (1) {
+        int wstatus;
         pid_t pid = waitpid(-1, &wstatus, 0);
 
         if (pid == -1) {
@@ -139,13 +139,6 @@ void launch_processes() {
                 if ((WIFEXITED(wstatus) && WEXITSTATUS(wstatus) != 0)
                     || (WIFSIGNALED(wstatus) && WTERMSIG(wstatus) != SIGINT && WTERMSIG(wstatus) != SIGTERM)) {
                     process->error = 1;
-                    if (verbose) {
-                        printf("multirun: command %s with pid %d exited abnormally\n", process->command, pid);
-                    }
-                } else {
-                    if (verbose) {
-                        printf("multirun: command %s with pid %d exited normally\n", process->command, pid);
-                    }
                 }
                 if (! closing) {
                     closing = 1;
@@ -153,7 +146,7 @@ void launch_processes() {
                     if (verbose) {
                         printf("multirun: sending SIGTERM to all subprocesses\n");
                     }
-                    //kill_all(SIGTERM);
+                    kill_all(SIGTERM);
                 }
             }
         } else {
@@ -162,7 +155,44 @@ void launch_processes() {
             }
         }
     }
-    // check if there are errors
+
+    // ensure all child died in all groups
+    for (int i = 0; i < nbr_processes; i++) {
+        while (1) {
+            int wstatus;
+            int pid = waitpid(-subprocesses[i].pid, &wstatus, 0);
+            if (pid == -1) {
+                if (errno == ECHILD) {
+                    printf("%d group terminated\n", subprocesses[i].pid);
+                    break; // no more children in group
+                } if (errno == EINTR) {
+                    continue; // interrupted
+                } else {
+                    fprintf(stderr, "multirun: error during wait: %d\n", errno);
+                    exit(-2);
+                }
+            } else if (pid == 0) {
+                break; // no more children
+            }
+            // something going wrong, try to send SIGTERM again
+            int ret = kill(-subprocesses[i].pid, SIGTERM);
+            if (ret != 0) {
+                fprintf(stderr, "multirun: error while killing processes\n");
+                exit(-2);
+            }
+        }
+        if (subprocesses[i].error) {
+            if (verbose) {
+                printf("multirun: command %s with pid %d exited abnormally\n", subprocesses[i].command, subprocesses[i].pid);
+            }
+        } else {
+            if (verbose) {
+                printf("multirun: command %s with pid %d exited normally\n", subprocesses[i].command, subprocesses[i].pid);
+            }
+        }
+    }
+
+    // check if there were errors
     int error = 0;
     for (int i = 0; i < nbr_processes; i++) {
         if (subprocesses[i].error) {
