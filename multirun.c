@@ -71,14 +71,23 @@ int main(int argc, char *const *argv) {
 
 void launch_processes() {
 
+    int subreaper = 0;
+
     #if SUBREAPER
-    prctl(PR_SET_CHILD_SUBREAPER, 1, 0, 0, 0);
+    subreaper = 1;
+    if (prctl(PR_SET_CHILD_SUBREAPER, 1) != 0) {
+        fprintf(stderr, "multirun: failed to launch as subreaper, subchild processes will be ignored\n");
+    }
+    #else
+    fprintf(stderr, "multirun: subreaper feature unavailable on this plaform, subchild processes will be ignored\n");
     #endif
 
     if (signal(SIGINT, sig_receive) == SIG_ERR) {
+        fprintf(stderr, "multirun: error registering signals\n");
         exit(-2);
     }
     if (signal(SIGTERM, sig_receive) == SIG_ERR) {
+        fprintf(stderr, "multirun: error registering signals\n");
         exit(-2);
     }
 
@@ -158,27 +167,6 @@ void launch_processes() {
             if (verbose) {
                 printf("multirun: subchild process with pid %d ended\n", pid);
             }
-        }
-    }
-
-    // ensure all child died in all groups
-    for (int i = 0; i < nbr_processes; i++) {
-        while (1) {
-            int wstatus;
-            int pid = waitpid(-subprocesses[i].pid, &wstatus, 0);
-            if (pid == -1) {
-                if (errno == ECHILD) {
-                    break; // no more children in group
-                } if (errno == EINTR) {
-                    continue; // interrupted
-                } else {
-                    fprintf(stderr, "multirun: error during wait: %d\n", errno);
-                    exit(-2);
-                }
-            } else if (pid == 0) {
-                break; // no more children
-            }
-            // some more child must still exit
         }
     }
 
