@@ -12,9 +12,6 @@
 #include <sys/prctl.h>
 #endif
 
-
-#include <sys/prctl.h>
-
 #ifndef PROJECT_VERSION
 #define PROJECT_VERSION "0.0.0"
 #endif
