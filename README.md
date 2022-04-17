@@ -63,7 +63,17 @@ cp build/multirun /bin && \
 cd .. && \
 rm -rf multirun-src
 ```
-   
+
+## Technical Description of Behavior
+
+* multirun launches each of it's children in a separate process group.
+* Each child is executed as a `/bin/sh` script preceded by `exec`. This is for convenience as it allows to specify a command with arguments instead of just a basic command. Example: `multirun "php-fpm -F" "httpd -D FOREGROUND" "tail --retry -f /var/log/php-fpm/www-error.log"`.
+* Whenever multirun receives a SIGINT or SIGTERM signal it won't exit, it will just forward the signal to all the process groups it created at launch. Targeting the process group instead of just the process allows subchildren to receive the signal as well. It's the same behavior than `sh` or `bash` when launching a command interactively and hitting `Ctrl-C` to send a SIGINT signal.
+* Whenever one of the direct children exit, for any reason (either spontaneously or because it decided to exit after receiving a SIGINT or SIGTERM signal) multirun will send a SIGTERM signal to all the process groups it created at launch.
+* The only condition for multirun to exit is that all its children have exited as well.
+* multirun does wait on all its children, which means it will reap zombie processes.
+* If all the direct children exited with 0 multirun will also exit with 0. It will exit with -1 otherwise.
+  
 ## FAQ
    
 ### When to use multirun in a Docker container
@@ -106,7 +116,7 @@ Also, if you launch scripts with multirun that will launch the service you want,
 
 ```bash
 # multirun call
-multirun ./service1.sh ./service2.sh
+multirun "./service1.sh" "./service2.sh"
 ```
 
 ```bash
