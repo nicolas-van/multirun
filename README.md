@@ -16,7 +16,7 @@ Usage: `multirun "command1" "command2" ...`
 
 You can also add the `-v` option to get a full log of the processes it starts and kills.
 
-Unlink most process managers multirun never attempts to restart one of its children if it crashes. Instead it will kill all its other children before exiting with an error code. This behavior is ideal when you just want to delegate the restart duty to the upper level, as example using systemd or Docker restart policies.
+Unlike most process managers multirun never attempts to restart one of its children if it crashes. Instead it will kill all its other children before exiting with an error code. This behavior is ideal when you just want to delegate the restart duty to the upper level, as example using systemd or Docker restart policies.
 
 ## Installation
 
