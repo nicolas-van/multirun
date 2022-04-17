@@ -8,7 +8,7 @@
 #include <sys/wait.h>
 #include <signal.h>
 
-#if __linux__ || __unix__ || defined(_POSIX_VERSION)
+#if __linux__ || __unix__
 #include <sys/prctl.h>
 #endif
 
