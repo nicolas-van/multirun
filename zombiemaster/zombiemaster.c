@@ -7,12 +7,21 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <signal.h>
+#include <time.h>
 
 
 void sig_receive_zombie_master(int signum);
 void sig_receive_zombie(int signum);
 
 int stop = 0;
+
+void force_sleep(__useconds_t t) {
+    unsigned int to_sleep = t;
+
+    while (to_sleep > 0) {
+        to_sleep = sleep(to_sleep);
+    }
+}
 
 int main(int argc, char* const* argv) {
     struct sigaction ssig;
@@ -30,12 +39,16 @@ int main(int argc, char* const* argv) {
                 exit(-2);
             if (sigaction(SIGTERM, &ssig, NULL))
                 exit(-2);
+
             while (!stop) {
-                sleep(1);
+                usleep(10);
             }
-            printf("Zombie %d sleeps a little\n", i);
-            sleep(3);
-            printf("Hi! I'm zombie %d and I die\n", i);
+
+            printf("Me zombie %d, me sleep\n", i);
+
+            force_sleep(6);
+
+            printf("Me zombie %d, me die\n", i);
             exit(0);
         } else {
             // nothing
@@ -49,18 +62,19 @@ int main(int argc, char* const* argv) {
         exit(-2);
 
     while (!stop) {
-        sleep(1);
+        sleep(10);
     }
-    printf("Zombie master sleeps a little\n");
-    sleep(3);
+
+    printf("Me zombie master, me sleep\n");
+
+    force_sleep(3);
     
-    printf("Hi! I'm zombie master and I die\n");
+    printf("Me zombie master, me die\n");
     exit(0);
 }
 
 void sig_receive_zombie_master(int signum) {
     printf("Me zombie master, me received %s bullet in the head\n", strsignal(signum));
-    exit(0);
     stop = 1;
 }
 
