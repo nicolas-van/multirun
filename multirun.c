@@ -7,6 +7,12 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <signal.h>
+
+#if __linux__ || __unix__ || defined(_POSIX_VERSION)
+#include <sys/prctl.h>
+#endif
+
+
 #include <sys/prctl.h>
 
 #ifndef PROJECT_VERSION
