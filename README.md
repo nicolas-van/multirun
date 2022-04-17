@@ -66,7 +66,7 @@ rm -rf multirun-src
 
 ## Technical Description of Behavior
 
-* multirun launches each of it's children in a separate process group.
+* multirun launches all its children in separate process groups.
 * Each child is executed as a `/bin/sh` script preceded by `exec`. This is for convenience as it allows to specify a command with arguments instead of just a basic command. Example: `multirun "php-fpm -F" "httpd -D FOREGROUND" "tail --retry -f /var/log/php-fpm/www-error.log"`.
 * Whenever multirun receives a SIGINT or SIGTERM signal it won't exit, it will just forward the signal to all the process groups it created at launch. Targeting the process group instead of just the process allows subchildren to receive the signal as well. It's the same behavior than `sh` or `bash` when launching a command interactively and hitting `Ctrl-C` to send a SIGINT signal.
 * Whenever one of the direct children exit, for any reason (either spontaneously or because it decided to exit after receiving a SIGINT or SIGTERM signal) multirun will send a SIGTERM signal to all the process groups it created at launch.
