@@ -196,8 +196,9 @@ void print_help() {
     printf("\n");
     printf("Version: %s\n", PROJECT_VERSION);
     printf("\n");
-    printf("multirun is a small utility to run multiple commands concurrently. ");
-    printf("If one of these commands terminate it will kill all the others.\n");
+    printf("multirun is a small utility to run multiple commands concurrently.\n");
+    printf("\n");
+    printf("If one of these commands terminate it will kill all the others and wait for all its children and subchildren to exit before exiting.\n");
     printf("\n");
     printf("Options:\n");
     printf("    -v verbose mode\n");
