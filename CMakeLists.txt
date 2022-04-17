@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 
 set(CMAKE_C_STANDARD 99)
 
-project(multirun VERSION 1.1.0 LANGUAGES C)
+project(multirun VERSION 1.1.1 LANGUAGES C)
 
 add_compile_definitions(PROJECT_VERSION="${PROJECT_VERSION}")
 

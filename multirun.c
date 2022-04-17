@@ -72,15 +72,17 @@ int main(int argc, char *const *argv) {
 void launch_processes() {
 
     int subreaper = 0;
-
     #if SUBREAPER
-    subreaper = 1;
-    if (prctl(PR_SET_CHILD_SUBREAPER, 1) != 0) {
-        fprintf(stderr, "multirun: failed to launch as subreaper, subchild processes will be ignored\n");
+    if (prctl(PR_SET_CHILD_SUBREAPER, 1) == 0) {
+        subreaper = 1;
     }
-    #else
-    fprintf(stderr, "multirun: subreaper feature unavailable on this plaform, subchild processes will be ignored\n");
     #endif
+
+    if (!subreaper && getpid() != 1) {
+        if (verbose) {
+            printf("multirun: failed to register as subreaper, probably because the plaform doesn't support it. Subchildren exit status will be ignored");
+        }
+    }
 
     if (signal(SIGINT, sig_receive) == SIG_ERR) {
         fprintf(stderr, "multirun: error registering signals\n");

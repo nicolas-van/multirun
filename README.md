@@ -38,7 +38,7 @@ The [release page](https://github.com/nicolas-van/multirun/releases) lists all p
 Here is an example install script for an x86_64 Linux using GNU libc. Replace the URL with another one if you use another system.
 
 ```bash
-wget -c https://github.com/nicolas-van/multirun/releases/download/1.1.0/multirun-x86_64-linux-gnu-1.1.0.tar.gz -O - | tar -xz && \
+wget -c https://github.com/nicolas-van/multirun/releases/download/1.1.1/multirun-x86_64-linux-gnu-1.1.1.tar.gz -O - | tar -xz && \
 mv multirun /bin
 ```
 
@@ -54,8 +54,8 @@ We provide binaries for the following systems:
 This project necessitates CMake.
 
 ```bash
-wget -c https://github.com/nicolas-van/multirun/archive/refs/tags/1.1.0.tar.gz -O - | tar -xz && \
-mv multirun-1.1.0 multirun-src && \
+wget -c https://github.com/nicolas-van/multirun/archive/refs/tags/1.1.1.tar.gz -O - | tar -xz && \
+mv multirun-1.1.1 multirun-src && \
 cd multirun-src && \
 cmake -S . -B build && \
 cmake --build build && \
