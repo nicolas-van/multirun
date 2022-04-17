@@ -7,6 +7,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <signal.h>
+#include <sys/prctl.h>
 
 #ifndef PROJECT_VERSION
 #define PROJECT_VERSION "0.0.0"
@@ -60,6 +61,16 @@ int main(int argc, char *const *argv) {
 }
 
 void launch_processes() {
+
+    prctl(PR_SET_CHILD_SUBREAPER, 1, 0, 0, 0);
+
+    if (signal(SIGINT, sig_receive) == SIG_ERR) {
+        exit(-2);
+    }
+    if (signal(SIGTERM, sig_receive) == SIG_ERR) {
+        exit(-2);
+    }
+
     subprocesses = malloc(sizeof(subprocess) * nbr_processes);
 
     for (int i = 0; i < nbr_processes; i++) {
@@ -81,13 +92,6 @@ void launch_processes() {
             new_sub.error = 0;
             subprocesses[i] = new_sub;
         }
-    }
-
-    if (signal(SIGINT, sig_receive) == SIG_ERR) {
-        exit(-2);
-    }
-    if (signal(SIGTERM, sig_receive) == SIG_ERR) {
-        exit(-2);
     }
 
     while (1) {
