@@ -8,7 +8,7 @@
 #include <sys/wait.h>
 #include <signal.h>
 
-#if __linux__
+#if __linux__ || __unix__ || defined(_POSIX_VERSION)
 #include <sys/prctl.h>
 #endif
 
@@ -19,7 +19,7 @@
 #ifdef PR_SET_CHILD_SUBREAPER
 #define SUBREAPER 1
 #else
-#define SUBREAPER 1
+#define SUBREAPER 0
 #endif
 
 typedef struct {
