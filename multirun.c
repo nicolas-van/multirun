@@ -13,6 +13,12 @@
 #define PROJECT_VERSION "0.0.0"
 #endif
 
+#ifdef PR_SET_CHILD_SUBREAPER
+#define SUBREAPER 1
+#else
+#define SUBREAPER 1
+#endif
+
 typedef struct {
     pid_t pid;
     const char* command;
@@ -62,7 +68,9 @@ int main(int argc, char *const *argv) {
 
 void launch_processes() {
 
+    #if SUBREAPER
     prctl(PR_SET_CHILD_SUBREAPER, 1, 0, 0, 0);
+    #endif
 
     if (signal(SIGINT, sig_receive) == SIG_ERR) {
         exit(-2);
