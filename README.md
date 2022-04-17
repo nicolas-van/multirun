@@ -8,9 +8,9 @@ A simple Unix utility in C to run multiple commands concurrently.
 * A very light alternative to classic init processes or supervisord to run multiple services in the same Docker container.
 * Is dead-simple to use.
 * Can be run without root permissions.
-* Cleanly kills all the processes it starts.
+* Cleanly kills all the processes it starts, including their subprocesses.
 * Delegates the restart duty to the upper level.
-* Forwards stdout and stderr for proper logging with Docker.
+* Forwards stdout and stderr for proper logging with Docker or systemd.
 
 Usage: `multirun "command1" "command2" ...`
 
@@ -88,18 +88,21 @@ Here is an example of bad use case:
 
 A common cause for these problems is invalid usage of shell scripts that causes signals to not be propagated properly.
 
-If you call multirun in a shell script, check that you launch it with the `exec` sh command. Example:
+If you call multirun in a shell script, check that you launch it with the [`exec`](https://ss64.com/bash/exec.html) sh command. Example:
 
 ```bash
 #!/bin/sh
+
 # any init code
 
 exec multirun arg1 arg2
 ```
 
+If you don't use `exec` your main process will likely remain `/bin/sh` which won't forward signals correctly to your multirun process.
+
 This advice is not specific to multirun and does apply to most containers that have a shell script as entrypoint.
 
-Also, if you launch scripts with multirun that will launch the service you want, be sure to add `exec` in these scripts as well. Example:
+Also, if you launch scripts with multirun that will launch the service you want, it is recommended to add `exec` in these scripts as well. Example:
 
 ```bash
 # multirun call

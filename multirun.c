@@ -63,12 +63,12 @@ int main(int argc, char *const *argv) {
         default:
             printf("Unknown option: %c\n", (char)optopt);
             print_help();
-            exit(-1);
+            exit(-2);
         }
     }
     if (optind >= argc) {
         print_help();
-        exit(-1);
+        exit(-2);
     }
     commands = &argv[optind];
     nbr_processes = argc - optind;
@@ -76,16 +76,16 @@ int main(int argc, char *const *argv) {
 }
 
 void launch_processes() {
-    int wstatus;
-    struct sigaction ssig;
-
     subprocesses = malloc(sizeof(subprocess) * nbr_processes);
 
     for (int i = 0; i < nbr_processes; i++) {
         pid_t pid = fork();
         if (pid == 0) {
+            // declare a new group
+            setpgrp();
+            // execute subcommand
             sub_exec(commands[i]);
-            exit(-1); // should not happen
+            exit(-2); // should not happen
         } else {
             if (verbose) {
                 printf("multirun: launched command %s with pid %d\n", commands[i], pid);
@@ -99,14 +99,30 @@ void launch_processes() {
         }
     }
 
-    ssig.sa_handler = sig_receive;
-    if (sigaction(SIGINT, &ssig, NULL))
-        exit(-1);
-    if (sigaction(SIGTERM, &ssig, NULL))
-        exit(-1);
+    if (signal(SIGINT, sig_receive) == SIG_ERR) {
+        exit(-2);
+    }
+    if (signal(SIGTERM, sig_receive) == SIG_ERR) {
+        exit(-2);
+    }
 
     while (1) {
-        pid_t pid = wait(&wstatus);
+        int wstatus;
+        pid_t pid = waitpid(-1, &wstatus, 0);
+
+        if (pid == -1) {
+            if (errno == ECHILD) {
+                break; // no more children
+            } if (errno == EINTR) {
+                continue; // interrupted
+            } else {
+                fprintf(stderr, "multirun: error during wait: %d\n", errno);
+                exit(-2);
+            }
+        } else if (pid == 0) {
+            break; // no more children
+        }
+
         subprocess* process = NULL;
         for (int i = 0; i < nbr_processes; i++) {
             if (subprocesses[i].pid == pid) {
@@ -114,6 +130,7 @@ void launch_processes() {
                 break;
             }
         }
+
         if (process != NULL) {
             // check if process is down
             if (WIFEXITED(wstatus) || WIFSIGNALED(wstatus)) {
@@ -122,11 +139,11 @@ void launch_processes() {
                     || (WIFSIGNALED(wstatus) && WTERMSIG(wstatus) != SIGINT && WTERMSIG(wstatus) != SIGTERM)) {
                     process->error = 1;
                     if (verbose) {
-                        printf("multirun: command %s with pid %d exited abnormally\n", process->command, pid);
+                        printf("multirun: command %s with pid %d exited abnormally\n", process->command, process->pid);
                     }
                 } else {
                     if (verbose) {
-                        printf("multirun: command %s with pid %d exited normally\n", process->command, pid);
+                        printf("multirun: command %s with pid %d exited normally\n", process->command, process->pid);
                     }
                 }
                 if (! closing) {
@@ -140,23 +157,33 @@ void launch_processes() {
             }
         } else {
             if (verbose) {
-                printf("multirun: reaped zombie process with pid %d\n", pid);
+                printf("multirun: subchild process with pid %d ended\n", pid);
             }
         }
-        // check if all processes are stopped
-        int running = 0;
-        for (int i = 0; i < nbr_processes; i++) {
-            if (subprocesses[i].up) {
-                running = 1;
-                break;
-            }
-        }
-        if (! running)
-            break;
     }
-    // reap all potential zombies
-    reap_zombies();
-    // check if there are errors
+
+    // ensure all child died in all groups
+    for (int i = 0; i < nbr_processes; i++) {
+        while (1) {
+            int wstatus;
+            int pid = waitpid(-subprocesses[i].pid, &wstatus, 0);
+            if (pid == -1) {
+                if (errno == ECHILD) {
+                    break; // no more children in group
+                } if (errno == EINTR) {
+                    continue; // interrupted
+                } else {
+                    fprintf(stderr, "multirun: error during wait: %d\n", errno);
+                    exit(-2);
+                }
+            } else if (pid == 0) {
+                break; // no more children
+            }
+            // some more child must still exit
+        }
+    }
+
+    // check if there were errors
     int error = 0;
     for (int i = 0; i < nbr_processes; i++) {
         if (subprocesses[i].error) {
@@ -199,13 +226,21 @@ void sub_exec(const char* command) {
     ret = execlp("sh", "sh", "-c", ccommand, (char*) NULL);
     if (ret != 0) {
         fprintf(stderr, "multirun: error launching the subprocess: %s\n", strerror(errno));
-        exit(-1);
+        exit(-2);
     }
 }
 
 void kill_all(int signal) {
     for (int i = 0; i < nbr_processes; i++) {
-        kill(subprocesses[i].pid, signal);
+        int ret = kill(-subprocesses[i].pid, signal);
+        if (ret != 0) {
+            if (errno == ESRCH) {
+                // ignore
+            } else {
+                fprintf(stderr, "multirun: error %d while killing processes\n", errno);
+                exit(-2);
+            }
+        }
     }
 }
 
@@ -217,26 +252,4 @@ void sig_receive(int signum) {
         closing = 1;
     }
     kill_all(signum);
-}
-
-void reap_zombies() {
-    while (1) {
-        pid_t childpid;
-        int wstatus;
-		childpid = waitpid(-1, &wstatus, WNOHANG);
-        if (childpid == -1) {
-            if (errno == ECHILD) {
-                break;
-            } else {
-                fprintf(stderr, "multirun: error while reaping zombies\n");
-                exit(-1);
-            }
-        } else if (childpid == 0) {
-            break;
-        } else {
-            if (verbose) {
-                printf("multirun: reaped zombie process with pid %d\n", childpid);
-            }
-        }
-    }
 }
