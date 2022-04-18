@@ -80,7 +80,7 @@ void launch_processes() {
 
     if (!subreaper && getpid() != 1) {
         if (verbose) {
-            printf("multirun: failed to register as subreaper, probably because the plaform doesn't support it. Subchildren exit status will be ignored");
+            printf("multirun: failed to register as subreaper, probably because the plaform doesn't support it. Subchildren exit status will be ignored.\n");
         }
     }
 
