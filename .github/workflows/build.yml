@@ -10,7 +10,7 @@ jobs:
       - name: Install and configure dependencies
         run: |
           sudo apt-get install -qq bats
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Build
         run: |
           cmake -S . -B build
@@ -53,7 +53,7 @@ jobs:
       CC: ${{ matrix.CC }}
     steps:
       - name: Musl compilers cache
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: |
             ~/musl-compilers
@@ -78,7 +78,7 @@ jobs:
             wget -q -c http://musl.cc/arm-linux-musleabihf-cross.tgz -O - | tar -xz
           fi
           popd
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: List
         run: find .
       - name: Build
@@ -98,11 +98,10 @@ jobs:
           fi
           tar -czf ./artifacts/$NAME-$TARGET-${{github.ref_name}}.tar.gz --directory build $NAME
       - name: Archive artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
-          name: result
-          path: |
-            ./artifacts
+          name: multirun-${{ matrix.TARGET }}-${{github.ref_name}}.tar.gz
+          path: ./artifacts/multirun-${{ matrix.TARGET }}-${{github.ref_name}}.tar.gz
 
   # deploys to github releases on tag
   deploy:
@@ -111,13 +110,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
-          name: result
           path: ./artifacts
+          pattern: "*.tar.gz"
+          merge-multiple: true
       - name: List
         run: find ./artifacts
       - name: Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           files: ./artifacts/*.tar.gz
